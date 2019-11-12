@@ -1,0 +1,37 @@
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:v2.0.0-rc3"
+    container_name: "traefik"
+    deploy:
+      #replicas: ${TRAEFIK_REPLICAS:-3}
+      placement:
+        constraints:
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik.entrypoints=web"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.jaked.in.local`)"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.services.api@internal.loadbalancer.server.port=443"
+    command:
+      #- "--log.level=DEBUG"
+      #- "--providers.docker.endpoint=tcp://127.0.0.1:2377"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.plex.address=:32400"
+      - "--api=true"
+      - "--api.dashboard=true"
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+networks:
+  traefik:
+    driver: overlay
+    attachable: true
