@@ -16,7 +16,7 @@ services:
         - "traefik.http.routers.traefik.entrypoints=web"
         - "traefik.http.routers.traefik.rule=Host(`traefik.jaked.in.local`)"
         - "traefik.http.routers.traefik.service=api@internal"
-        - "traefik.http.services.api@internal.loadbalancer.server.port=443"
+        - "traefik.http.services.api@internal.loadbalancer.server.port=80"
     command:
       #- "--log.level=DEBUG"
       #- "--providers.docker.endpoint=tcp://127.0.0.1:2377"
@@ -28,10 +28,13 @@ services:
       - "--api.dashboard=true"
     ports:
       - "80:80"
+      - "32400:32400"
+    networks:
+      - default
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 networks:
-  traefik:
+  default:
     driver: overlay
     attachable: true
