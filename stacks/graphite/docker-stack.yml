@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+  server:
+    image: graphiteapp/graphite-statsd:1.1.6-1
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel.jaked.in]
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_default"
+        - "traefik.http.routers.graphite.entrypoints=web"
+        - "traefik.http.routers.graphite.rule=Host(`graphite.jaked.in.local`)"
+        - "traefik.http.routers.graphite.service=graphite"
+        - "traefik.http.services.graphite.loadbalancer.server.port=8080"
+    networks:
+      - default
+      - traefik_default
+    volumes:
+      - conf:/opt/graphite/conf
+      - storage:/opt/graphite/storage
+      - statsd_conf:/opt/statsd/config
+
+volumes:
+  conf:
+  storage:
+  statsd_conf:
+
+# TODO name: graphite_ingress?
+networks:
+  default:
+    driver: overlay
+    attachable: true
+  traefik_default:
+    external: true
