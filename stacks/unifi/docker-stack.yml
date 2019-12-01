@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+  mongo:
+    image: mongo:3.4
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel]
+      restart_policy:
+        condition: any
+        delay: 0s
+        max_attempts: 0
+    networks:
+      - unifi
+    volumes:
+      - db:/data/db
+
+  controller:
+    image: jacobalberty/unifi:stable
+    init: true
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel]
+      restart_policy:
+        condition: any
+        delay: 0s
+        max_attempts: 0
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_default"
+        - "traefik.http.services.unifi.loadbalancer.server.port=8080"
+        - "traefik.http.routers.unifi.service=unifi"
+        - "traefik.http.routers.unifi.rule=Host(`unifi.jaked.in.local`)"
+    networks:
+      - unifi
+      - traefik_default
+    volumes:
+      - data:/unifi/data
+      - log:/unifi/log
+      - cert:/unifi/cert
+      - init:/unifi/init.d
+    environment:
+      DB_URI: mongodb://mongo/unifi
+      STATDB_URI: mongodb://mongo/unifi_stat
+      DB_NAME: unifi
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "3478:3478/udp"
+      - "10001:10001/udp"
+
+volumes:
+  db:
+  data:
+  log:
+  cert:
+  init:
+
+networks:
+  unifi:
+    driver: overlay
+    attachable: true
+  traefik_default:
+    external: true
