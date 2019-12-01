@@ -23,7 +23,9 @@ services:
       - "--providers.docker.swarmMode=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
       - "--entrypoints.plex.address=:32400"
+      - "--entrypoints.deluged.address=:58846"
       - "--api=true"
       - "--api.dashboard=true"
     ports:
