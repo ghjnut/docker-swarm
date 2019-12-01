@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  server:
+    image: grafana/grafana:6.4.3
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel.jaked.in]
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_default"
+        - "traefik.http.routers.grafana.entrypoints=web"
+        - "traefik.http.routers.grafana.rule=Host(`grafana.jaked.in.local`)"
+        - "traefik.http.routers.grafana.service=grafana"
+        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    networks:
+      - prometheus
+      - graphite
+      - traefik_default
+    volumes:
+      - type: volume
+        source: data
+        target: /var/lib/grafana
+
+networks:
+  prometheus:
+    external: true
+    name: prometheus_server
+  graphite:
+    external: true
+    name: graphite_default
+  traefik_default:
+    external: true
+
+volumes:
+  data:
