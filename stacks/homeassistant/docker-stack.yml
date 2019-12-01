@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  server:
+    image: homeassistant/home-assistant:stable
+    volumes:
+      - type: bind
+        source: /var/lib/homeassistant
+        target: /config
+    networks:
+      - traefik_default
+    environment:
+      TZ: ${TZ}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_default"
+        - "traefik.http.routers.homeassistant.entrypoints=web"
+        - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.jaked.in.local`)"
+        - "traefik.http.routers.homeassistant.service=homeassistant"
+        - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+
+networks:
+  traefik_default:
+    external: true
