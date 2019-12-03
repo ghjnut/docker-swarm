@@ -15,16 +15,17 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.deluged.entrypoints=deluged"
-        - "traefik.http.routers.deluged.rule=Host(`deluged.jaked.in.local`)"
-        - "traefik.http.routers.deluged.service=deluged"
+        - "traefik.tcp.routers.deluged.entrypoints=deluged"
+        - "traefik.tcp.routers.deluged.rule=HostSNI(`deluged.jaked.in.local`)"
+        - "traefik.tcp.routers.deluged.service=deluged"
         # daemon
-        - "traefik.http.services.deluged.loadbalancer.server.port=58846"
+        - "traefik.tcp.services.deluged.loadbalancer.server.port=58846"
     networks:
       - deluge
       - traefik_default
     ports:
-      # external connections
+      - "58846:58846"
+      # public torrents connections
       - "58946:58946"
     volumes:
       # TODO move to /var/lib
