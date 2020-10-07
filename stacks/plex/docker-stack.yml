@@ -16,15 +16,19 @@ services:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
         - "traefik.http.routers.plex.entrypoints=plex"
-        - "traefik.http.routers.plex.rule=Host(`plex.jaked.in.local`) || Host(`plex.jaked.in`)"
+        - "traefik.http.routers.plex.rule=Host(`plex.jaked.in.local`)"
         - "traefik.http.routers.plex.service=plex"
         - "traefik.http.services.plex.loadbalancer.server.port=32400"
-        #- "traefik.http.routers.plexlocal.service=plex"
-        #- "traefik.http.routers.plexlocal.rule=Host(`plex.jaked.in.local`)"
+        #- "traefik.enable=true"
         #- "traefik.http.routers.plexlocal.entrypoints=plex"
+        #- "traefik.http.routers.plexlocal.rule=Host(`plex.jaked.in.local`)"
+        #- "traefik.http.routers.plexlocal.service=plex"
+        #- "traefik.http.routers.plex.entrypoints=plex"
         #- "traefik.http.routers.plex.rule=Host(`plex.jaked.in`)"
+        #- "traefik.http.routers.plex.service=plex"
         #- "traefik.http.routers.plex.tls=true"
-        #- "traefik.http.routers.plex.tls.certresolver=public"
+        #- "traefik.http.routers.plex.tls.certresolver=web"
+        #- "traefik.http.services.plex.loadbalancer.server.port=32400"
     environment:
       TZ: ${TZ}
       PLEX_CLAIM: ${PLEX_CLAIM}
