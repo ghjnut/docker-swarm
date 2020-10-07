@@ -1,8 +1,8 @@
-version: "3.3"
+version: "3.7"
 
 services:
   traefik:
-    image: "traefik:v2.0.0-rc3"
+    image: "traefik:v2.3.1"
     container_name: "traefik"
     deploy:
       #replicas: ${TRAEFIK_REPLICAS:-3}
@@ -22,18 +22,25 @@ services:
       #- "--providers.docker.endpoint=tcp://127.0.0.1:2377"
       - "--providers.docker.swarmMode=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.consulcatalog=true"
+      - "--providers.consulcatalog.prefix=traefik"
+      - "--providers.consulcatalog.endpoint.address=http://consul-leader:8500"
+      - "--providers.consulcatalog.exposedByDefault=true"
       - "--entrypoints.web.address=:80"
       #- "--entrypoints.websecure.address=:443"
       - "--entrypoints.plex.address=:32400"
+      #- "--entrypoints.plexsecure.address=:32400"
       # TODO fix deluged TCP
       #- "--entrypoints.deluged.address=:58846"
-      #- "--certificatesResolvers.public.acme.email=${EMAIL?Variable EMAIL not set}"
-      # TODO add consul
-      #- "--certificatesResolvers.public.acme.storage=traefik/acme/account
-      #- "--certificatesResolvers.public.acme.storage=acme.json"
+      - "--certificatesResolvers.public.acme.email=${EMAIL?Variable EMAIL not set}"
+      # consul HA no longer works
+      #- "--certificatesResolvers.public.acme.storage=traefik/acme/account"
+      - "--certificatesResolvers.public.acme.storage=acme.json"
       # TODO update to TLS challenege or ideally DNS challenge
-      #- "--certificatesResolvers.public.acme.httpChallenge=true"
-      #- "--certificatesResolvers.public.acme.httpChallenge.entryPoint=web"
+      - "--certificatesResolvers.public.acme.httpchallenge=true"
+      # has to be 80 or 443
+      # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
+      - "--certificatesResolvers.public.acme.httpchallenge.entrypoint=web"
       - "--api=true"
       - "--api.dashboard=true"
     ports:
@@ -44,10 +51,77 @@ services:
       #- "58846:58846"
     networks:
       - default
+      - consul
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - type: volume
+        source: acme
+        target: /data
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    configs:
+      - source: traefik_config
+        target: /traefik.toml
+        #uid: '103'
+        #gid: '103'
+        #mode: 0440
+
+  consul-leader:
+    image: consul
+    command: agent -server -client=0.0.0.0 -bootstrap -ui
+    volumes:
+      - type: volume
+        source: consul-data-leader
+        target: /consul/data
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    networks:
+      - default
+      - consul
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_default"
+        - "traefik.http.routers.consultraefik.entrypoints=web"
+        - "traefik.http.routers.consultraefik.rule=Host(`consul.traefik.jaked.in.local`)"
+        - "traefik.http.routers.consultraefik.service=consultraefik"
+        - "traefik.http.services.consultraefik.loadbalancer.server.port=8500"
+
+  consul-replica:
+    image: consul
+    command: agent -server -client=0.0.0.0 -retry-join="consul-leader"
+    volumes:
+      - type: volume
+        source: consul-data-replica
+        target: /consul/data
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    networks:
+      - default
+      - consul
+    deploy:
+      replicas: ${CONSUL_REPLICAS:-0}
+      placement:
+        preferences:
+          - spread: node.id
+
+volumes:
+  acme:
+  consul-data-leader:
+  consul-data-replica:
+
+configs:
+  traefik_config:
+    file: ./traefik.yml
+    #external: true
 
 networks:
   default:
+    driver: overlay
+    attachable: true
+  consul:
     driver: overlay
     attachable: true
