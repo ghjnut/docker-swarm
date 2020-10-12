@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  server:
+    image: kylemanna/openvpn:latest
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel]
+      restart_policy:
+        condition: any
+        delay: 0s
+        max_attempts: 0
+    networks:
+      - openvpn
+    ports:
+      - "1194:1194/udp"
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - type: volume
+        source: data
+        target: /etc/openvpn
+    #volumes:
+    #  - type: bind
+    #    source: /var/lib/openvpn
+    #    target: /etc/openvpn
+
+volumes:
+  data:
+
+networks:
+  openvpn:
+    driver: overlay
+    attachable: true
