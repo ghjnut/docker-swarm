@@ -5,24 +5,24 @@ services:
     image: portainer/portainer:1.24.1
     command: -H tcp://tasks.agent:9001 --tlsskipverify
     ports:
+      # fallback port
       - "9000:9000"
     volumes:
       - type: bind
         source: /var/lib/portainer
         target: /data
     networks:
-      - agent_network
       - traefik_default
+      - agent_network
     deploy:
       mode: replicated
       replicas: 1
       placement:
-        constraints:
-          - node.hostname == hansel.jaked.in
+        constraints: [node.hostname == hansel.jaked.in]
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.portainer.entrypoints=web"
+        - "traefik.http.routers.portainer.entrypoints=webinternal"
         - "traefik.http.routers.portainer.rule=Host(`portainer.jaked.in.local`)"
         - "traefik.http.routers.portainer.service=portainer"
         - "traefik.http.services.portainer.loadbalancer.server.port=9000"

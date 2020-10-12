@@ -15,7 +15,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.prometheus.entrypoints=web"
+        - "traefik.http.routers.prometheus.entrypoints=webinternal"
         - "traefik.http.routers.prometheus.rule=Host(`prometheus.jaked.in.local`)"
         - "traefik.http.routers.prometheus.service=prometheus"
         - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
@@ -87,4 +87,4 @@ volumes:
 configs:
   config:
     external: true
-    name: prometheus
+    name: prometheus-0.0.8
