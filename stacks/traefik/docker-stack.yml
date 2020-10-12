@@ -3,7 +3,6 @@ version: "3.7"
 services:
   traefik:
     image: "traefik:v2.3.1"
-    container_name: "traefik"
     deploy:
       #replicas: ${TRAEFIK_REPLICAS:-3}
       placement:
@@ -13,39 +12,40 @@ services:
           - spread: node.id
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.entrypoints=web"
+        - "traefik.http.routers.traefik.entrypoints=webinternal"
         - "traefik.http.routers.traefik.rule=Host(`traefik.jaked.in.local`)"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.api@internal.loadbalancer.server.port=80"
-    command:
+      #command:
       #- "--log.level=DEBUG"
       #- "--providers.docker.endpoint=tcp://127.0.0.1:2377"
-      - "--providers.docker.swarmMode=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.consulcatalog=true"
-      - "--providers.consulcatalog.prefix=traefik"
-      - "--providers.consulcatalog.endpoint.address=http://consul-leader:8500"
-      - "--providers.consulcatalog.exposedByDefault=true"
-      - "--entrypoints.web.address=:80"
-      #- "--entrypoints.websecure.address=:443"
-      - "--entrypoints.plex.address=:32400"
-      #- "--entrypoints.plexsecure.address=:32400"
-      # TODO fix deluged TCP
-      #- "--entrypoints.deluged.address=:58846"
-      - "--certificatesResolvers.public.acme.email=${EMAIL?Variable EMAIL not set}"
-      # consul HA no longer works
-      #- "--certificatesResolvers.public.acme.storage=traefik/acme/account"
-      - "--certificatesResolvers.public.acme.storage=acme.json"
-      # TODO update to TLS challenege or ideally DNS challenge
-      - "--certificatesResolvers.public.acme.httpchallenge=true"
-      # has to be 80 or 443
-      # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
-      - "--certificatesResolvers.public.acme.httpchallenge.entrypoint=web"
-      - "--api=true"
-      - "--api.dashboard=true"
+      #- "--providers.docker.swarmMode=true"
+      #- "--providers.docker.exposedbydefault=false"
+      #- "--providers.consulcatalog=true"
+      #- "--providers.consulcatalog.prefix=traefik"
+      #- "--providers.consulcatalog.endpoint.address=http://consul-leader:8500"
+      #- "--providers.consulcatalog.exposedByDefault=true"
+      #- "--entrypoints.web.address=:80"
+      ##- "--entrypoints.websecure.address=:443"
+      #- "--entrypoints.plex.address=:32400"
+      ##- "--entrypoints.plexsecure.address=:32400"
+      ## TODO fix deluged TCP
+      ##- "--entrypoints.deluged.address=:58846"
+      #- "--certificatesResolvers.public.acme.email=${EMAIL?Variable EMAIL not set}"
+      ## consul HA no longer works
+      ##- "--certificatesResolvers.public.acme.storage=traefik/acme/account"
+      #- "--certificatesResolvers.public.acme.storage=acme.json"
+      ## TODO update to TLS challenege or ideally DNS challenge
+      #- "--certificatesResolvers.public.acme.httpchallenge=true"
+      ## has to be 80 or 443
+      ## https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
+      #- "--certificatesResolvers.public.acme.httpchallenge.entrypoint=web"
+      #- "--api=true"
+      #- "--api.dashboard=true"
     ports:
       # TODO needed?
       - "80:80"
+      - "8080:8080"
       - "32400:32400"
       # TODO fix deluged TCP
       #- "58846:58846"
@@ -62,7 +62,7 @@ services:
         read_only: true
     configs:
       - source: traefik_config
-        target: /traefik.toml
+        target: /etc/traefik/traefik.toml
         #uid: '103'
         #gid: '103'
         #mode: 0440
@@ -84,7 +84,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.consultraefik.entrypoints=web"
+        - "traefik.http.routers.consultraefik.entrypoints=webinternal"
         - "traefik.http.routers.consultraefik.rule=Host(`consul.traefik.jaked.in.local`)"
         - "traefik.http.routers.consultraefik.service=consultraefik"
         - "traefik.http.services.consultraefik.loadbalancer.server.port=8500"
@@ -115,8 +115,9 @@ volumes:
 
 configs:
   traefik_config:
-    file: ./traefik.yml
-    #external: true
+    name: traefik-2.toml
+    #file: ./traefik.toml
+    external: true
 
 networks:
   default:

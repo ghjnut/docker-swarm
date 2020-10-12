@@ -32,9 +32,10 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
-        - "traefik.http.services.unifi.loadbalancer.server.port=8080"
+        - "traefik.http.routers.unifi.entrypoints=webinternal"
         - "traefik.http.routers.unifi.service=unifi"
         - "traefik.http.routers.unifi.rule=Host(`unifi.jaked.in.local`)"
+        - "traefik.http.services.unifi.loadbalancer.server.port=8080"
     networks:
       - unifi
       - traefik_default
@@ -47,8 +48,9 @@ services:
       DB_URI: mongodb://mongo/unifi
       STATDB_URI: mongodb://mongo/unifi_stat
       DB_NAME: unifi
+    # TODO somehwhere else?
     ports:
-      - "8080:8080"
+      #- "8080:8080"
       - "8443:8443"
       - "3478:3478/udp"
       - "10001:10001/udp"

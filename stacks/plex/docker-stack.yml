@@ -15,6 +15,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
+        #- "traefik.entryPoints.plex=:32400"
         - "traefik.http.routers.plex.entrypoints=plex"
         - "traefik.http.routers.plex.rule=Host(`plex.jaked.in.local`)"
         - "traefik.http.routers.plex.service=plex"
@@ -36,6 +37,8 @@ services:
       ALLOWED_NETWORKS: ${ALLOWED_NETWORKS}
     networks:
       - traefik_default
+    #ports:
+    #  - "32400:32400"
     volumes:
       - type: bind
         source: /var/lib/plex/config
