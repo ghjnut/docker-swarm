@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  agent:
+    # TODO pin, point to registry
+    image: 127.0.0.1:5000/ghjnut/pingwave:latest
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel.jaked.in]
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 1
+    configs:
+      - source: config
+        target: /pingwave.hcl
+    networks:
+      - graphite
+    command: --config-file /pingwave.hcl --statsd-host graphite_server
+
+networks:
+  graphite:
+    external: true
+    name: graphite_default
+
+configs:
+  config:
+    external: true
+    name: pingwave
