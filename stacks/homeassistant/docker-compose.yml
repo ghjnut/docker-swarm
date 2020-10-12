@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  server:
+    image: homeassistant/home-assistant:stable
+    volumes:
+      - type: bind
+        source: /var/lib/homeassistant
+        target: /config
+    environment:
+      TZ: America/Denver
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
+    privileged: true
+    ports:
+      - target: 8123
+        published: 8123
+        protocol: tcp
+        mode: host
+
+#networks:
+#  traefik_default:
+#    external: true
