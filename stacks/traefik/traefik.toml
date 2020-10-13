@@ -3,7 +3,7 @@
     address = ":58846"
   # TODO should be in service?
   [entryPoints.webinternal]
-    address = ":8080"
+    address = ":8081"
   # TODO should be in service?
   [entryPoints.web]
     # necessary for http challenge
@@ -101,5 +101,4 @@
       #  resolvers = ["foobar", "foobar"]
       #  disablePropagationCheck = true
       #[certificatesResolvers.CertificateResolver0.acme.httpChallenge]
-      #  entryPoint = "foobar"
-      #[certificatesResolvers.CertificateResolver0.acme.tlsChallenge]
+      #  entryPoint = "foobar" [certificatesResolvers.CertificateResolver0.acme.tlsChallenge]

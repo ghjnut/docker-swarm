@@ -6,8 +6,7 @@ services:
     deploy:
       #replicas: ${TRAEFIK_REPLICAS:-3}
       placement:
-        constraints:
-          - node.hostname == hansel.jaked.in
+        constraints: [node.hostname == hansel.jaked.in]
         preferences:
           - spread: node.id
       labels:
@@ -115,7 +114,7 @@ volumes:
 
 configs:
   traefik_config:
-    name: traefik-2.toml
+    name: traefik-3.toml
     #file: ./traefik.toml
     external: true
 
