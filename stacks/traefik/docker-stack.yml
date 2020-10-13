@@ -44,7 +44,7 @@ services:
     ports:
       # TODO needed?
       - "80:80"
-      - "8080:8080"
+      - "8081:8081"
       - "32400:32400"
       # TODO fix deluged TCP
       #- "58846:58846"
@@ -54,7 +54,7 @@ services:
     volumes:
       - type: volume
         source: acme
-        target: /data
+        target: /etc/letsencrypt
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
