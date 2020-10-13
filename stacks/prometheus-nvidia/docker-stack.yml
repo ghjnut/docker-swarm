@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  exporter:
+    image: mindprince/nvidia_gpu_prometheus_exporter:0.1
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == derek]
+      restart_policy:
+        condition: any
+        delay: 0s
+        max_attempts: 5
+    networks:
+      - exporter
+    environment:
+      LD_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1
+    devices:
+      - "/dev/nvidiactl:/dev/nvidiactl"
+      - "/dev/nvidia0:/dev/nvidia0"
+    volumes:
+      - "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.440.26:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1"
+
+networks:
+  exporter:
+    external:
+      name: prometheus_exporter

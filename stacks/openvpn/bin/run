@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+[[ "$TRACE" ]] && set -x
+set -eu -o pipefail
+
+source .env
+source bin/functions.sh
+
+main() {
+	start_server_container
+}
+
+main
