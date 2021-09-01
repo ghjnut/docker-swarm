@@ -50,7 +50,7 @@ services:
       - /dev/disk/:/dev/disk:ro
 
   node_exporter:
-    image: prom/node-exporter:v0.18.1
+    image: prom/node-exporter:v1.2.1
     #image: quay.io/prometheus/node-exporter
     # map hostname:
     # node_uname_info{domainname="(none)",machine="x86_64",
