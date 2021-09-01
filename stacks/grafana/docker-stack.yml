@@ -20,9 +20,9 @@ services:
         #- "traefik.http.routers.grafana.service=grafana"
         - "traefik.http.services.grafana.loadbalancer.server.port=3000"
     networks:
-      - traefik_default
       - prometheus
       - graphite
+      - traefik_default
     volumes:
       - type: volume
         source: data

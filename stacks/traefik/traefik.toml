@@ -1,5 +1,7 @@
 [entryPoints]
   [entryPoints.deluged]
+    address = ":58946"
+  [entryPoints.delugedclient]
     address = ":58846"
   # TODO should be in service?
   [entryPoints.webinternal]
@@ -11,6 +13,8 @@
     # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
     # TODO should be 443?
     address = ":80"
+  [entryPoints.registry]
+    address = ":5000"
   # TODO should be in service?
   [entryPoints.plex]
     # SSL+insecure

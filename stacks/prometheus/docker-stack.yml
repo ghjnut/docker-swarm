@@ -29,9 +29,10 @@ services:
     restart: always
     volumes:
       - data:/prometheus
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--storage.tsdb.retention.time=365d", "--web.console.libraries=/usr/share/prometheus/console_libraries", "--web.console.templates=/usr/share/prometheus/consoles"]
 
   cadvisor_exporter:
-    image: google/cadvisor:v0.33.0
+    image: gcr.io/google-containers/cadvisor:v0.36.0
     deploy:
       endpoint_mode: dnsrr
       mode: global
@@ -43,9 +44,10 @@ services:
       - exporter
     volumes:
       - /:/rootfs:ro
-      - /var/run:/var/run:rw
+      - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
 
   node_exporter:
     image: prom/node-exporter:v0.18.1
@@ -87,4 +89,4 @@ volumes:
 configs:
   config:
     external: true
-    name: prometheus-0.0.8
+    name: prometheus-0.0.9

@@ -2,7 +2,9 @@ version: '3.7'
 
 services:
   deluged:
-    image: 127.0.0.1:5000/ghjnut/deluge:1.3.12
+    # TODO pipe through traefik (for some reason wasn't working)
+    #image: registry.jaked.in.internal:5000/deluge:2.0.3
+    image: 127.0.0.1:5000/deluge:2.0.3
     deploy:
       mode: replicated
       replicas: 1
@@ -16,13 +18,14 @@ services:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik_default"
         - "traefik.tcp.routers.deluged.entrypoints=deluged"
-        - "traefik.tcp.routers.deluged.rule=HostSNI(`deluged.jaked.in.local`)"
+        - "traefik.tcp.routers.deluged.rule=Host(`deluged.jaked.in.local`)"
         - "traefik.tcp.routers.deluged.service=deluged"
         # daemon
         - "traefik.tcp.services.deluged.loadbalancer.server.port=58846"
     networks:
       - deluge
       - traefik_default
+    # TODO pipe through traefik
     ports:
       - "58846:58846"
       # public torrents connections
@@ -31,15 +34,19 @@ services:
       # TODO move to /var/lib
       - type: bind
         source: /home/ghjnut/projects/docker/deluge/data
-        target: /data
+        target: /root/data
+        #read_only: true
       # TODO move to /var/lib
       - type: bind
         source: /home/ghjnut/projects/docker/deluge/config
         target: /root/.config
-    command: deluged --do-not-daemonize --loglevel=info
+        #read_only: true
+    command: deluged --do-not-daemonize --loglevel info
 
   web:
-    image: 127.0.0.1:5000/ghjnut/deluge:1.3.12
+    # TODO pipe through traefik (for some reason wasn't working)
+    #image: registry.jaked.in.internal:5000/deluge:2.0.3
+    image: 127.0.0.1:5000/deluge:2.0.3
     deploy:
       mode: replicated
       replicas: 1
@@ -60,10 +67,15 @@ services:
       - deluge
       - traefik_default
     volumes:
+      #- type: bind
+      #  source: /home/ghjnut/projects/docker/deluge/config/deluge
+      #  target: /config
+      #  read_only: true
       - type: bind
         source: /home/ghjnut/projects/docker/deluge/config
         target: /root/.config
-    command: deluge-web --loglevel=info
+        #read_only: true
+    command: deluge-web --do-not-daemonize --loglevel info
 
 # TODO make config and data into volumes
 
