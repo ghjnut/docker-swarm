@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: graphiteapp/graphite-statsd:1.1.7-6
+    image: graphiteapp/graphite-statsd:1.1.8-1
     deploy:
       mode: replicated
       replicas: 1
