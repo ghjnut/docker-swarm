@@ -66,46 +66,46 @@ services:
         #gid: '103'
         #mode: 0440
 
-  consul-leader:
-    image: consul
-    command: agent -server -client=0.0.0.0 -bootstrap -ui
-    volumes:
-      - type: volume
-        source: consul-data-leader
-        target: /consul/data
-    environment:
-      - CONSUL_BIND_INTERFACE=eth0
-      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
-    networks:
-      - default
-      - consul
-    deploy:
-      labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.consultraefik.entrypoints=webinternal"
-        - "traefik.http.routers.consultraefik.rule=Host(`consul.traefik.jaked.in.local`)"
-        - "traefik.http.routers.consultraefik.service=consultraefik"
-        - "traefik.http.services.consultraefik.loadbalancer.server.port=8500"
+    #consul-leader:
+    #  image: consul
+    #  command: agent -server -client=0.0.0.0 -bootstrap -ui
+    #  volumes:
+    #    - type: volume
+    #      source: consul-data-leader
+    #      target: /consul/data
+    #  environment:
+    #    - CONSUL_BIND_INTERFACE=eth0
+    #    - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    #  networks:
+    #    - default
+    #    - consul
+    #  deploy:
+    #    labels:
+    #      - "traefik.enable=true"
+    #      - "traefik.docker.network=traefik_default"
+    #      - "traefik.http.routers.consultraefik.entrypoints=webinternal"
+    #      - "traefik.http.routers.consultraefik.rule=Host(`consul.traefik.jaked.in.local`)"
+    #      - "traefik.http.routers.consultraefik.service=consultraefik"
+    #      - "traefik.http.services.consultraefik.loadbalancer.server.port=8500"
 
-  consul-replica:
-    image: consul
-    command: agent -server -client=0.0.0.0 -retry-join="consul-leader"
-    volumes:
-      - type: volume
-        source: consul-data-replica
-        target: /consul/data
-    environment:
-      - CONSUL_BIND_INTERFACE=eth0
-      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
-    networks:
-      - default
-      - consul
-    deploy:
-      replicas: ${CONSUL_REPLICAS:-0}
-      placement:
-        preferences:
-          - spread: node.id
+    #consul-replica:
+    #  image: consul
+    #  command: agent -server -client=0.0.0.0 -retry-join="consul-leader"
+    #  volumes:
+    #    - type: volume
+    #      source: consul-data-replica
+    #      target: /consul/data
+    #  environment:
+    #    - CONSUL_BIND_INTERFACE=eth0
+    #    - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    #  networks:
+    #    - default
+    #    - consul
+    #  deploy:
+    #    replicas: ${CONSUL_REPLICAS:-0}
+    #    placement:
+    #      preferences:
+    #        - spread: node.id
 
 volumes:
   acme:
