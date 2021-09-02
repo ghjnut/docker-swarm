@@ -1,89 +1,9 @@
-[entryPoints]
-  [entryPoints.deluged]
-    address = ":58946"
-  [entryPoints.delugedclient]
-    address = ":58846"
-  # TODO should be in service?
-  [entryPoints.webinternal]
-    address = ":8081"
-  # TODO should be in service?
-  [entryPoints.web]
-    # necessary for http challenge
-    # has to be 80 or 443
-    # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
-    # TODO should be 443?
-    address = ":80"
-  [entryPoints.registry]
-    address = ":5000"
-  # TODO should be in service?
-  [entryPoints.plex]
-    # SSL+insecure
-    address = ":32400"
-    #[entryPoints.EntryPoint0.transport]
-    #  [entryPoints.EntryPoint0.transport.lifeCycle]
-    #    requestAcceptGraceTimeout = 42
-    #    graceTimeOut = 42
-    #  [entryPoints.EntryPoint0.transport.respondingTimeouts]
-    #    readTimeout = 42
-    #    writeTimeout = 42
-    #    idleTimeout = 42
-    #[entryPoints.EntryPoint0.proxyProtocol]
-    #  insecure = true
-    #  trustedIPs = ["foobar", "foobar"]
-    #[entryPoints.EntryPoint0.forwardedHeaders]
-    #  insecure = true
-    #  trustedIPs = ["foobar", "foobar"]
-    #[entryPoints.EntryPoint0.http]
-    #  middlewares = ["foobar", "foobar"]
-    #  [entryPoints.EntryPoint0.http.redirections]
-    #    [entryPoints.EntryPoint0.http.redirections.entryPoint]
-    #      to = "foobar"
-    #      scheme = "foobar"
-    #      permanent = true
-    #      priority = 42
-    #  [entryPoints.EntryPoint0.http.tls]
-    #    options = "foobar"
-    #    certResolver = "foobar"
-
-    #    [[entryPoints.EntryPoint0.http.tls.domains]]
-    #      main = "foobar"
-    #      sans = ["foobar", "foobar"]
-
-    #    [[entryPoints.EntryPoint0.http.tls.domains]]
-    #      main = "foobar"
-    #      sans = ["foobar", "foobar"]
- 
 [providers]
-  #providersThrottleDuration = 42
   [providers.docker]
-    #constraints = "foobar"
-    #watch = true
-    # TODO
-    #endpoint = "tcp://127.0.0.1:2377"
-    #defaultRule = "foobar"
-    exposedByDefault = false
-    # TODO
-    #useBindPortIP = true
-    swarmMode = true
-    #network = "foobar"
-    #swarmModeRefreshSeconds = 42
-    # TODO 
-    #[providers.docker.tls]
-    #  ca = "foobar"
-    #  caOptional = true
-    #  cert = "foobar"
-    #  key = "foobar"
-    #  insecureSkipVerify = true
-  #[providers.consulCatalog]
-  #  prefix = "traefik"
-  #  [providers.consulCatalog.endpoint]
-  #    address = "http://consul-leader:8500"
-  #  exposedByDefault = false
 
 [api]
   #insecure = true
   dashboard = true
-  #debug = true
 
 [certificatesResolvers]
   [certificatesResolvers.public]
@@ -98,11 +18,26 @@
         # has to be 80 or 443
         # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
         entryPoint = "web"
-      #keyType = "foobar"
-      #[certificatesResolvers.CertificateResolver0.acme.dnsChallenge]
-      #  provider = "foobar"
-      #  delayBeforeCheck = 42
-      #  resolvers = ["foobar", "foobar"]
-      #  disablePropagationCheck = true
-      #[certificatesResolvers.CertificateResolver0.acme.httpChallenge]
-      #  entryPoint = "foobar" [certificatesResolvers.CertificateResolver0.acme.tlsChallenge]
+
+[entryPoints]
+  # TODO should be in service?
+  [entryPoints.webinternal]
+    address = ":8081"
+  # TODO should be in service?
+  [entryPoints.web]
+    # necessary for http challenge
+    # has to be 80 or 443
+    # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
+    # TODO should be 443?
+    address = ":80"
+  [entryPoints.registry]
+    address = ":5000"
+  [entryPoints.deluged]
+    address = ":58946"
+  [entryPoints.delugedclient]
+    address = ":58846"
+  # TODO should be in service?
+  [entryPoints.plex]
+    # SSL+insecure
+    address = ":32400"
+  #debug = true
