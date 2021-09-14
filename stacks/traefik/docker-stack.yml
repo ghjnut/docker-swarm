@@ -2,34 +2,24 @@ version: "3.7"
 
 services:
   traefik:
-    image: "traefik:v2.5.1"
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       #replicas: ${TRAEFIK_REPLICAS:-3}
       placement:
-        constraints: [node.hostname == hansel.jaked.in]
-        preferences:
-          - spread: node.id
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.traefik.entrypoints=webinternal"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.jaked.in.local`)"
-        - "traefik.http.routers.traefik.service=api@internal"
-        - "traefik.http.services.api@internal.loadbalancer.server.port=80"
+        constraints: [node.labels.traefik-public.traefik-public-certificates == true]
+
     ports:
-      #- "80:80"
+      # for TLS-ALPN-01 ACME challenge
       - target: 443
         published: 443
         protocol: tcp
-      - "8081:8081"
-      #- target: 8443
-      #  published: 8443
-      #  protocol: tcp
-      - "5000:5000"
-      # TODO fix deluged TCP
-      #- "58846:58846"
-      - "32400:32400"
+      # plex
+      - target: 32400
+        published: 32400
+        protocol: tcp
+        mode: host
     networks:
-      - default
+      - public
     volumes:
       - type: volume
         source: acme
@@ -45,18 +35,12 @@ services:
 volumes:
   acme:
 
-#configs:
-#  traefik_config:
-#    name: traefik-7.toml
-#    #file: ./traefik.toml
-#    external: true
-
 configs:
   traefik.toml:
     name: traefik-${SETTINGS_TIMESTAMP}.toml
     file: config/traefik.toml
 
 networks:
-  default:
+  public:
     driver: overlay
     attachable: true

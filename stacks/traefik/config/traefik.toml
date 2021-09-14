@@ -1,47 +1,21 @@
 [providers]
   [providers.docker]
-    #endpoint = "tcp://127.0.0.1:2377"
+    constraints = "Label(`traefik.constraint-label`, `traefic-public`)"
     exposedByDefault = false
     swarmMode = true
-    network = "traefik_default"
+    network = "traefik_public"
 
 [api]
   #insecure = true
-  dashboard = true
+  #dashboard = true
 
-[certificatesResolvers]
-  [certificatesResolvers.jakedin-public]
-    [certificatesResolvers.jakedin-public.acme]
-      # TODO
-      #email = ""
-      #caServer = "foobar"
-      #preferredChain = "foobar"
-      #storage = "/etc/letsencrypt/acme.json"
-      #httpchallenge = "acme.json"
-      [certificatesResolvers.jakedin-pubic.acme.tlsChallenge]
-        # has to be 80 or 443
-        # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
-        #entryPoint = "websecure"
+[certificatesResolvers.jakedin-public.acme]
+  email = "ghjnut@gmail.com"
+  storage = "/etc/letsencrypt/acme.json"
+  # for TLS-ALPN-01 ACME challenge
+  [certificatesResolvers.jakedin-pubic.acme.tlsChallenge]
 
 [entryPoints]
-  # TODO should be in service?
-  #[entryPoints.web]
-  #  # for http challenge, has to be 80 or 443
-  #  # https://community.letsencrypt.org/t/support-for-ports-other-than-80-and-443/3419/71
-  #  # TODO should be 443?
-  #  address = ":80"
-  [entryPoints.websecure]
-    address = ":443"
-  # TODO should be in service?
-  [entryPoints.webinternal]
-    address = ":8081"
-  [entryPoints.registry]
-    address = ":5000"
-  [entryPoints.deluged]
-    address = ":58946"
-  [entryPoints.delugedclient]
-    address = ":58846"
-  # TODO should be in service?
   [entryPoints.plex]
     # SSL+insecure
     address = ":32400"
