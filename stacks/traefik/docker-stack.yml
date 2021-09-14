@@ -39,17 +39,22 @@ services:
         target: /var/run/docker.sock
         read_only: true
     configs:
-      - source: traefik_config
+      - source: traefik.toml
         target: /etc/traefik/traefik.toml
 
 volumes:
   acme:
 
+#configs:
+#  traefik_config:
+#    name: traefik-7.toml
+#    #file: ./traefik.toml
+#    external: true
+
 configs:
-  traefik_config:
-    name: traefik-7.toml
-    #file: ./traefik.toml
-    external: true
+  traefik.toml:
+    name: traefik-${SETTINGS_TIMESTAMP}.toml
+    file: config/traefik.toml
 
 networks:
   default:
