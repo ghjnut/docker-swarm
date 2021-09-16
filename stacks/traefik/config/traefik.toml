@@ -1,22 +1,27 @@
 [providers]
   [providers.docker]
-    constraints = "Label(`traefik.constraint-label`, `traefic-public`)"
+    constraints = "Label(`traefik.constraint-label`, `traefik-public`)"
     exposedByDefault = false
     swarmMode = true
-    network = "traefik_public"
+    network = "traefik-public"
 
+# TODO figure out how to enable the GUI
 [api]
-  #insecure = true
-  #dashboard = true
+  dashboard = false
+  insecure = false
 
 [certificatesResolvers.jakedin-public.acme]
   email = "ghjnut@gmail.com"
   storage = "/etc/letsencrypt/acme.json"
   # for TLS-ALPN-01 ACME challenge
-  [certificatesResolvers.jakedin-pubic.acme.tlsChallenge]
+  [certificatesResolvers.jakedin-public.acme.tlsChallenge]
 
 [entryPoints]
   [entryPoints.plex]
     # SSL+insecure
-    address = ":32400"
+    address = ":32400/tcp"
     #debug = true
+
+#[http.middlewares]
+#  [http.middlewares.auth.basicauth]
+#    users = test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
