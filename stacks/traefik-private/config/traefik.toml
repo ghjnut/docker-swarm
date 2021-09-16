@@ -12,12 +12,12 @@
 [entryPoints]
   [entryPoints.web]
     address = ":80"
-
-  [entryPoints.web.http]
-    [entryPoints.web.http.redirections]
-      [entryPoints.web.http.redirections.entryPoint]
-        to = "websecure"
-        scheme = "https"
+    # TODO enable when internal SSL setup
+    #[entryPoints.web.http]
+    #  [entryPoints.web.http.redirections]
+    #    [entryPoints.web.http.redirections.entryPoint]
+    #      to = "websecure"
+    #      scheme = "https"
 
   [entryPoints.websecure]
     # SSL+insecure

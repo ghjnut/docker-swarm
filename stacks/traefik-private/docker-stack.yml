@@ -6,6 +6,17 @@ services:
     deploy:
       placement:
         constraints: [node.hostname == hansel.jaked.in]
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        # TODO kind of works?
+        - traefik.http.routers.traefik.entrypoints=web
+        - traefik.http.routers.traefik.rule=Host(`${SUBDOMAIN?Variable not set}.${DOMAIN?Variable not set}`) && PathPrefix(`/dashboard`)
+        - traefik.http.routers.traefik.service=api@internal
+        #- traefik.http.routers.traefik.middlewares=auth - traefik.http.middlewares.auth.basicauth.users=
+        # Dummy service for Swarm port detection. The port can be any valid integer value.
+        - traefik.http.services.dummy-svc.loadbalancer.server.port=9999
     ports:
       - target: 80
         published: 80
@@ -25,13 +36,6 @@ services:
     configs:
       - source: traefik.toml
         target: /etc/traefik/traefik.toml
-    labels:
-      - traefik.http.routers.traefik.rule=Host(`${SUBDOMAIN?Variable not set}.${DOMAIN?Variable not set}`) && PathPrefix(`/dashboard`))
-      - traefik.http.routers.traefik.service=api@internal
-      #- traefik.http.routers.traefik.middlewares=auth
-      #- traefik.http.middlewares.auth.basicauth.users=
-      # Dummy service for Swarm port detection. The port can be any valid integer value.
-      #- traefik.http.services.dummy-svc.loadbalancer.server.port=9999
 
 volumes:
   acme:
