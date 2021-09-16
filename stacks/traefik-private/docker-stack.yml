@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    deploy:
+      placement:
+        constraints: [node.hostname == hansel.jaked.in]
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: ingress
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: ingress
+    networks:
+      - private
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    configs:
+      - source: traefik.toml
+        target: /etc/traefik/traefik.toml
+    labels:
+      - traefik.http.routers.traefik.rule=Host(`${SUBDOMAIN?Variable not set}.${DOMAIN?Variable not set}`) && PathPrefix(`/dashboard`))
+      - traefik.http.routers.traefik.service=api@internal
+      #- traefik.http.routers.traefik.middlewares=auth
+      #- traefik.http.middlewares.auth.basicauth.users=
+      # Dummy service for Swarm port detection. The port can be any valid integer value.
+      #- traefik.http.services.dummy-svc.loadbalancer.server.port=9999
+
+volumes:
+  acme:
+
+configs:
+  traefik.toml:
+    name: traefik-private-${SETTINGS_TIMESTAMP}.toml
+    file: config/traefik.toml
+
+networks:
+  private:
+    name: traefik-private
+    driver: overlay
+    attachable: true

@@ -1,0 +1,25 @@
+[providers]
+  [providers.docker]
+    constraints = "Label(`traefik.constraint-label`, `traefik-private`)"
+    exposedByDefault = false
+    swarmMode = true
+    network = "traefik-private"
+
+[api]
+  insecure = true
+  dashboard = true
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+  [entryPoints.web.http]
+    [entryPoints.web.http.redirections]
+      [entryPoints.web.http.redirections.entryPoint]
+        to = "websecure"
+        scheme = "https"
+
+  [entryPoints.websecure]
+    # SSL+insecure
+    address = ":443/tcp"
+    #debug = true
