@@ -12,7 +12,7 @@ services:
         - traefik.docker.network=traefik-private
         # TODO kind of works?
         - traefik.http.routers.traefik.entrypoints=web
-        - traefik.http.routers.traefik.rule=Host(`${SUBDOMAIN?Variable not set}.${DOMAIN?Variable not set}`) && PathPrefix(`/dashboard`)
+        - traefik.http.routers.traefik.rule=Host(`${SUBDOMAIN?Variable not set}.${DOMAIN?Variable not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
         - traefik.http.routers.traefik.service=api@internal
         #- traefik.http.routers.traefik.middlewares=auth - traefik.http.middlewares.auth.basicauth.users=
         # Dummy service for Swarm port detection. The port can be any valid integer value.
