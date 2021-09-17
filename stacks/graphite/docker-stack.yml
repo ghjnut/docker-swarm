@@ -13,15 +13,16 @@ services:
         delay: 5s
         max_attempts: 1
       labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.graphite.entrypoints=webinternal"
-        - "traefik.http.routers.graphite.rule=Host(`graphite.jaked.in.local`)"
-        - "traefik.http.routers.graphite.service=graphite"
-        - "traefik.http.services.graphite.loadbalancer.server.port=8080"
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.graphite.entrypoints=web
+        - traefik.http.routers.graphite.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.graphite.service=graphite
+        - traefik.http.services.graphite.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     networks:
-      - traefik_default
       - default
+      - traefik-private
     volumes:
       - conf:/opt/graphite/conf
       - storage:/opt/graphite/storage
@@ -37,5 +38,6 @@ networks:
   default:
     driver: overlay
     attachable: true
-  traefik_default:
+  traefik-private:
+    name: traefik-private
     external: true
