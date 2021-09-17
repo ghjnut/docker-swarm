@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   pihole:
-    image: pihole/pihole:latest
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -13,14 +13,15 @@ services:
         delay: 0s
         max_attempts: 0
       labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.pihole.entrypoints=webinternal"
-        - "traefik.http.routers.pihole.rule=Host(`pihole.jaked.in.local`)"
-        - "traefik.http.routers.pihole.service=pihole"
-        - "traefik.http.services.pihole.loadbalancer.server.port=80"
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.pihole.entrypoints=web
+        - traefik.http.routers.pihole.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.pihole.service=pihole
+        - traefik.http.services.pihole.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     environment:
-      TZ: 'America/Denver'
+      TZ: ${TZ}
     #cap_add:
     #  - NET_ADMIN
     ports:
@@ -32,19 +33,19 @@ services:
       published: 53
       protocol: udp
       mode: host
-      #- "53:53"
-      #- "67:67/udp"
-      #- "80:80/tcp"
-      #- "443:443/tcp"
+    # DHCP
+    #- target: 67
+    #  published: 67
+    #  protocol: udp
+    #  mode: host
     #configs:
     #  - source: config
     #    target: /etc/prometheus/prometheus.yml
     networks:
       - pihole
-      - traefik_default
+      - traefik-private
     dns:
       - 127.0.0.1
-    restart: unless-stopped
     volumes:
       - pihole:/etc/pihole/
       - dnsmasq:/etc/dnsmasq.d/
@@ -61,26 +62,12 @@ services:
         condition: any
         delay: 0s
         max_attempts: 0
-      #labels:
-      #  - "traefik.enable=true"
-      #  - "traefik.docker.network=traefik_default"
-      #  - "traefik.http.routers.pihole.entrypoints=webinternal"
-      #  - "traefik.http.routers.pihole.rule=Host(`pihole.jaked.in.local`)"
-      #  - "traefik.http.routers.pihole.service=pihole"
-      #  - "traefik.http.services.pihole.loadbalancer.server.port=80"
     environment:
-      TZ: 'America/Denver'
+      TZ: ${TZ}
       PIHOLE_HOSTNAME: 'pihole'
       PIHOLE_API_TOKEN: ''
-      INTERVAL: '30s'
-      PORT: 9617
-    #cap_add:
-    #  - NET_ADMIN
-    #ports:
-    #  - "53:53"
-    #configs:
-    #  - source: config
-    #    target: /etc/prometheus/prometheus.yml
+      INTERVAL: ${EXPORTER_INTERVAL:?EXPORTER_INTERVAL not set}
+      PORT: ${EXPORTER_PORT:?EXPORTER_PORT not set}
     networks:
       - pihole
       - prometheus_exporter
@@ -88,13 +75,10 @@ services:
 networks:
   pihole:
     driver: overlay
-    #attachable: true
-  #server:
-  #  driver: overlay
-  #  attachable: true
   prometheus_exporter:
     external: true
-  traefik_default:
+  traefik-private:
+    name: traefik-private
     external: true
 
 # TODO persist?
