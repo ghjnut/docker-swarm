@@ -10,13 +10,12 @@ services:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
         - traefik.docker.network=traefik-private
-        # TODO kind of works?
-        - traefik.http.routers.traefik.entrypoints=web
-        - traefik.http.routers.traefik.rule=Host(`${SUBDOMAIN?Variable not set}.${DOMAIN?Variable not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
-        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik-private.entrypoints=web
+        - traefik.http.routers.traefik-private.rule=Host(`${DOMAIN:?DOMAIN not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+        - traefik.http.routers.traefik-private.service=api@internal
         #- traefik.http.routers.traefik.middlewares=auth - traefik.http.middlewares.auth.basicauth.users=
         # Dummy service for Swarm port detection. The port can be any valid integer value.
-        - traefik.http.services.dummy-svc.loadbalancer.server.port=9999
+        - traefik.http.services.dummy-svc.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     ports:
       - target: 80
         published: 80
@@ -42,7 +41,7 @@ volumes:
 
 configs:
   traefik.toml:
-    name: traefik-private-${SETTINGS_TIMESTAMP}.toml
+    name: traefik-private-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.toml
     file: config/traefik.toml
 
 networks:
