@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: grafana/grafana:8.1.2
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -13,16 +13,16 @@ services:
         delay: 5s
         max_attempts: 1
       labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.grafana.entrypoints=webinternal"
-        - "traefik.http.routers.grafana.rule=Host(`grafana.jaked.in.local`)"
-        #- "traefik.http.routers.grafana.service=grafana"
-        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.grafana.entrypoints=web
+        - traefik.http.routers.grafana.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.services.grafana.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     networks:
       - prometheus
       - graphite
-      - traefik_default
+      - traefik-private
     volumes:
       - type: volume
         source: data
@@ -35,7 +35,8 @@ networks:
   graphite:
     external: true
     name: graphite_default
-  traefik_default:
+  traefik-private:
+    name: traefik-private
     external: true
 
 volumes:
