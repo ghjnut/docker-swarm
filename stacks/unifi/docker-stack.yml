@@ -1,6 +1,58 @@
 version: '3.7'
 
 services:
+  controller:
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    init: true
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel.jaked.in]
+      restart_policy:
+        condition: any
+        delay: 0s
+        max_attempts: 0
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.unifi.entrypoints=web
+        - traefik.http.routers.unifi.service=unifi
+        - traefik.http.routers.unifi.rule=Host(`unifi.jaked.in.local`)
+        - traefik.http.routers.unifi.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.services.unifi.loadbalancer.server.port=8080
+    networks:
+      - unifi
+      - traefik_default
+    volumes:
+      - data:/unifi/data
+      - log:/unifi/log
+      - cert:/unifi/cert
+      - init:/unifi/init.d
+    environment:
+      DB_URI: mongodb://mongo/unifi
+      STATDB_URI: mongodb://mongo/unifi_stat
+      DB_NAME: unifi
+    # TODO figure out what can be safely loadbalanced
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+      - target: 8443
+        published: 8443
+        protocol: tcp
+        mode: host
+      - target: 3478
+        published: 3478
+        protocol: udp
+        mode: host
+      - target: 10001
+        published: 10001
+        protocol: udp
+        mode: host
+
   mongo:
     image: mongo:3.6
     deploy:
@@ -16,44 +68,6 @@ services:
       - unifi
     volumes:
       - db:/data/db
-
-  controller:
-    image: jacobalberty/unifi:v6.2.26
-    init: true
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints: [node.hostname == hansel.jaked.in]
-      restart_policy:
-        condition: any
-        delay: 0s
-        max_attempts: 0
-      labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.unifi.entrypoints=webinternal"
-        - "traefik.http.routers.unifi.service=unifi"
-        - "traefik.http.routers.unifi.rule=Host(`unifi.jaked.in.local`)"
-        - "traefik.http.services.unifi.loadbalancer.server.port=8080"
-    networks:
-      - unifi
-      - traefik_default
-    volumes:
-      - data:/unifi/data
-      - log:/unifi/log
-      - cert:/unifi/cert
-      - init:/unifi/init.d
-    environment:
-      DB_URI: mongodb://mongo/unifi
-      STATDB_URI: mongodb://mongo/unifi_stat
-      DB_NAME: unifi
-    # TODO somehwhere else?
-    ports:
-      - "8080:8080"
-      - "8443:8443"
-      - "3478:3478/udp"
-      - "10001:10001/udp"
 
 volumes:
   db:
