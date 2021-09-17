@@ -1,0 +1,14 @@
+version: 0.1
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:
+    enabled: false
+
+http:
+  addr: 0.0.0.0:5000
+  net: tcp
+  host: https://registry.jaked.in
+  secret:
+  debug:
+    addr: 0.0.0.0:5001

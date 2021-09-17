@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: registry:2.7.1
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -12,20 +12,71 @@ services:
         condition: any
         delay: 0s
         max_attempts: 0
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.registry.entrypoints=web
+        - traefik.http.routers.registry.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.registry.service=registry
+        - traefik.http.services.registry.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
+    configs:
+      - source: config.yml
+        target: /etc/docker/registry/config.yml
     networks:
       - registry
-    ports:
-      - target: 5000
-        published: 5000
-        protocol: tcp
-        mode: ingress
+      - traefik-private
     volumes:
-      - data:/var/lib/registry
+      - type: volume
+        source: data
+        target: /var/lib/registry
+
+  web:
+    image: ${WEB_DOCKER_IMAGE}:${WEB_DOCKER_TAG}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hansel.jaked.in]
+      restart_policy:
+        condition: any
+        delay: 0s
+        max_attempts: 0
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.registryweb.entrypoints=web
+        - traefik.http.routers.registryweb.rule=Host(`${WEB_DOMAIN:?WEB_DOMAIN not set}`)
+        - traefik.http.routers.registryweb.service=registryweb
+        - traefik.http.services.registryweb.loadbalancer.server.port=${WEB_LB_PORT:?WEB_LB_PORT not set}
+    configs:
+      - source: webconfig.yml
+        target: /conf/config.yml
+    networks:
+      - registry
+      - traefik-private
+    volumes:
+      - type: volume
+        source: data
+        target: /var/lib/registry
+
+configs:
+  config.yml:
+    name: registry-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.yml
+    file: config/config.yml
+  webconfig.yml:
+    name: registry-web-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.yml
+    file: config/webconfig.yml
+
 
 networks:
   registry:
     driver: overlay
     attachable: true
+  traefik-private:
+    name: traefik-private
+    external: true
 
 volumes:
   data:
