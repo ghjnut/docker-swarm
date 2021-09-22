@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: prom/prometheus:v2.29.2
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -13,26 +13,27 @@ services:
         delay: 0s
         max_attempts: 0
       labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.prometheus.entrypoints=webinternal"
-        - "traefik.http.routers.prometheus.rule=Host(`prometheus.jaked.in.local`)"
-        - "traefik.http.routers.prometheus.service=prometheus"
-        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.prometheus.entrypoints=web
+        - traefik.http.routers.prometheus.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.prometheus.service=prometheus
+        - traefik.http.services.prometheus.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     configs:
-      - source: config
+      - source: prometheus.yml
         target: /etc/prometheus/prometheus.yml
     networks:
       - exporter
       - server
-      - traefik_default
+      - traefik-private
     restart: always
     volumes:
       - data:/prometheus
     command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--storage.tsdb.retention.time=365d", "--web.console.libraries=/usr/share/prometheus/console_libraries", "--web.console.templates=/usr/share/prometheus/consoles"]
 
   cadvisor_exporter:
-    image: gcr.io/google-containers/cadvisor:v0.36.0
+    image: ${CADVISOR_DOCKER_IMAGE}:${CADVISOR_DOCKER_TAG}
     deploy:
       endpoint_mode: dnsrr
       mode: global
@@ -40,8 +41,17 @@ services:
         condition: any
         delay: 0s
         max_attempts: 0
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+        - traefik.http.routers.cadvisor.entrypoints=web
+        - traefik.http.routers.cadvisor.rule=Host(`${CADVISOR_DOMAIN:?CADVISOR_DOMAIN not set}`)
+        - traefik.http.routers.cadvisor.service=cadvisor
+        - traefik.http.services.cadvisor.loadbalancer.server.port=${CADVISOR_LB_PORT:?CADVISOR_LB_PORT not set}
     networks:
       - exporter
+      - traefik-private
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -79,7 +89,8 @@ networks:
   server:
     driver: overlay
     attachable: true
-  traefik_default:
+  traefik-private:
+    name: traefik-private
     external: true
 
 # TODO persist?
@@ -87,6 +98,6 @@ volumes:
   data:
 
 configs:
-  config:
-    external: true
-    name: prometheus-0.0.9
+  prometheus.yml:
+    name: prometheus-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.yml
+    file: config/prometheus.yml
