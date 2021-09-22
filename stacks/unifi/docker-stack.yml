@@ -19,12 +19,11 @@ services:
         - traefik.docker.network=traefik-private
         - traefik.http.routers.unifi.entrypoints=web
         - traefik.http.routers.unifi.service=unifi
-        - traefik.http.routers.unifi.rule=Host(`unifi.jaked.in.local`)
         - traefik.http.routers.unifi.rule=Host(`${DOMAIN:?DOMAIN not set}`)
-        - traefik.http.services.unifi.loadbalancer.server.port=8080
+        - traefik.http.services.unifi.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     networks:
       - unifi
-      - traefik_default
+      - traefik-private
     volumes:
       - data:/unifi/data
       - log:/unifi/log
@@ -80,5 +79,6 @@ networks:
   unifi:
     driver: overlay
     attachable: true
-  traefik_default:
+  traefik-private:
+    name: traefik-private
     external: true
