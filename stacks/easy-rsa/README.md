@@ -1,13 +1,20 @@
 [setup](https://www.digitalocean.com/community/tutorials/how-to-set-up-and-configure-a-certificate-authority-ca-on-ubuntu-20-04)
 
-# BOOTSTRAP
+# import cert authority
+(https://www.digitalocean.com/community/tutorials/how-to-set-up-and-configure-a-certificate-authority-ca-on-ubuntu-20-04)
+
+    sudo cp /tmp/ca.crt /usr/local/share/ca-certificates/
+    sudo update-ca-certificates
+
+
+## BOOTSTRAP
 
     docker run --rm -it --name easyrsa alpine:3.14 sh
 
     cd ~/src/github.com/ghjnut/docker-swarm/stacks/easy-rsa
 
 
-# INIT PKI
+## INIT PKI
 
     # alpine
     apk update
@@ -17,7 +24,7 @@
     cd ~/easy-rsa
     ./easyrsa init-pki
 
-# BUILD CA
+## BUILD CA
 `ca.crt`
 
     # host
@@ -27,19 +34,19 @@
     ./easyrsa build-ca
     # hit 'enter' for default
 
-# COPY OUT
+## COPY OUT
 
     # host
     docker cp easyrsa:/root/easy-rsa/pki/ca.crt ~/src/github.com/ghjnut/docker-swarm/stacks/easy-rsa/config/
 
 
-# CREATE PRIVATE KEY
+## CREATE PRIVATE KEY
 `traefik-private.key`
 
     cd ~/src/github.com/ghjnut/docker-swarm/stacks/traefik-private
     openssl genrsa -out config/certs/traefik-private.key
 
-# CREATE SIGNING REQUEST
+## CREATE SIGNING REQUEST
 [https://jimfrenette.com/2018/03/ssl-certificate-authority-for-docker-and-traefik/](TLS guide)
 
 `traefik-private.csr`
@@ -52,7 +59,7 @@
 
     openssl req -new -sha512 -nodes -out config/certs/traefik-private.csr -newkey rsa:2048 -keyout config/certs/traefik-private.key -config <( cat config/certs/traefik-private.csr.cnf )
 
-# SIGN REQUEST
+## SIGN REQUEST
 `traefik-private.crt`
 
     # host
@@ -63,7 +70,7 @@
     # host
     docker cp easyrsa:/root/easy-rsa/pki/issued/traefik-private.crt ~/src/github.com/ghjnut/docker-swarm/stacks/traefik-private/config/certs/traefik-private.crt
 
-# ADD TO TRAEFIK
+## ADD TO TRAEFIK
 
     # host
     scp /home/ghjnut/src/github.com/ghjnut/docker-swarm/stacks/easy-rsa/config/ca.crt hansel.jaked.in:~/certs
