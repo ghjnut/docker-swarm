@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: graphiteapp/graphite-statsd:1.1.8-1
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -16,9 +16,12 @@ services:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
         - traefik.docker.network=traefik-private
-        - traefik.http.routers.graphite.entrypoints=web
-        - traefik.http.routers.graphite.rule=Host(`${DOMAIN:?DOMAIN not set}`)
-        - traefik.http.routers.graphite.service=graphite
+
+       # https
+        - traefik.http.routers.graphite-secure.entrypoints=websecure
+        - traefik.http.routers.graphite-secure.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.graphite-secure.tls=true
+
         - traefik.http.services.graphite.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     networks:
       - default
