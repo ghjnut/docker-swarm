@@ -16,9 +16,12 @@ services:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
         - traefik.docker.network=traefik-private
-        - traefik.http.routers.prometheus.entrypoints=web
-        - traefik.http.routers.prometheus.rule=Host(`${DOMAIN:?DOMAIN not set}`)
-        - traefik.http.routers.prometheus.service=prometheus
+
+        # https
+        - traefik.http.routers.prometheus-secure.entrypoints=websecure
+        - traefik.http.routers.prometheus-secure.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.prometheus-secure.tls=true
+
         - traefik.http.services.prometheus.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     configs:
       - source: prometheus.yml
@@ -45,9 +48,11 @@ services:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
         - traefik.docker.network=traefik-private
-        - traefik.http.routers.cadvisor.entrypoints=web
-        - traefik.http.routers.cadvisor.rule=Host(`${CADVISOR_DOMAIN:?CADVISOR_DOMAIN not set}`)
-        - traefik.http.routers.cadvisor.service=cadvisor
+
+        - traefik.http.routers.cadvisor-secure.entrypoints=websecure
+        - traefik.http.routers.cadvisor-secure.rule=Host(`${CADVISOR_DOMAIN:?CADVISOR_DOMAIN not set}`)
+        - traefik.http.routers.cadvisor-secure.tls=true
+
         - traefik.http.services.cadvisor.loadbalancer.server.port=${CADVISOR_LB_PORT:?CADVISOR_LB_PORT not set}
     networks:
       - exporter
