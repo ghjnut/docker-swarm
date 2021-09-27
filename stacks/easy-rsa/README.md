@@ -18,6 +18,7 @@
     ./easyrsa init-pki
 
 # BUILD CA
+`ca.crt`
 
     # host
     docker cp ~/src/github.com/ghjnut/docker-swarm/stacks/easy-rsa/config/vars easyrsa:/usr/share/easy-rsa/vars
@@ -33,19 +34,26 @@
 
 
 # CREATE PRIVATE KEY
+`traefik-private.key`
 
     cd ~/src/github.com/ghjnut/docker-swarm/stacks/traefik-private
     openssl genrsa -out config/certs/traefik-private.key
 
 # CREATE SIGNING REQUEST
+[https://jimfrenette.com/2018/03/ssl-certificate-authority-for-docker-and-traefik/](TLS guide)
+
+`traefik-private.csr`
+`traefik-private.key`
 
     #OLD
-    #openssl req -new -key config/certs/traefik-private.key -out config/certs/traefik-private.req
     # fill in with matching easy rsa vars
     # CN = internal.jaked.in
-    openssl req -new -sha512 -nodes -out config/certs/traefik-private.csr -newkey rsa:2048 -keyout config/certs/traefik-private.key -config <( cat config/certs/server.csr.cnf )
+    #openssl req -new -key config/certs/traefik-private.key -out config/certs/traefik-private.req
+
+    openssl req -new -sha512 -nodes -out config/certs/traefik-private.csr -newkey rsa:2048 -keyout config/certs/traefik-private.key -config <( cat config/certs/traefik-private.csr.cnf )
 
 # SIGN REQUEST
+`traefik-private.crt`
 
     # host
     docker cp ~/src/github.com/ghjnut/docker-swarm/stacks/traefik-private/config/certs/traefik-private.csr easyrsa:/tmp
