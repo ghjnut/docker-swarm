@@ -1,6 +1,6 @@
 registry:
   # Docker registry url
-  url: http://server:5000/v2
+  url: https://registry.jaked.in/v2
   # Docker registry fqdn
   name: registry.jaked.in
   # To allow image delete, should be false
