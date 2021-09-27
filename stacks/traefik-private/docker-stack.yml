@@ -13,7 +13,6 @@ services:
         - traefik.http.routers.traefik-private.entrypoints=web
         - traefik.http.routers.traefik-private.rule=Host(`${DOMAIN:?DOMAIN not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
         - traefik.http.routers.traefik-private.service=api@internal
-        #- traefik.http.routers.traefik.middlewares=auth - traefik.http.middlewares.auth.basicauth.users=
         # Dummy service for Swarm port detection. The port can be any valid integer value.
         - traefik.http.services.dummy-svc.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     ports:
@@ -28,6 +27,12 @@ services:
     networks:
       - private
     volumes:
+      #- type: volume
+      #  source: traefik-dynamic
+      #  target: /etc/traefik/dynamic_conf
+      - type: volume
+        source: private-cert
+        target: /certs
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
@@ -35,14 +40,20 @@ services:
     configs:
       - source: traefik.toml
         target: /etc/traefik/traefik.toml
+      - source: traefik-dynamic.toml
+        target: /etc/traefik/dynamic_conf/traefik.toml
 
 volumes:
-  acme:
+  #traefik-dynamic:
+  private-cert:
 
 configs:
   traefik.toml:
     name: traefik-private-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.toml
     file: config/traefik.toml
+  traefik-dynamic.toml:
+    name: traefik-private-dynamic-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.toml
+    file: config/traefik-dynamic.toml
 
 networks:
   private:

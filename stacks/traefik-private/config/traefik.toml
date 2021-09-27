@@ -1,4 +1,11 @@
+[log]
+  level = "INFO"
+  #level = "DEBUG"
+
 [providers]
+  [providers.file]
+    filename = "/etc/traefik/dynamic_conf/traefik.toml"
+
   [providers.docker]
     constraints = "Label(`traefik.constraint-label`, `traefik-private`)"
     exposedByDefault = false
@@ -19,7 +26,11 @@
     #      to = "websecure"
     #      scheme = "https"
 
+  # SSL+insecure
   [entryPoints.websecure]
-    # SSL+insecure
     address = ":443/tcp"
     #debug = true
+    #[entryPoints.websecure.http.tls]
+    #  [[entryPoints.websecure.http.tls.domains]]
+    #    main = "internal.jaked.in"
+    #    sans = ["*.internal.jaked.in"]

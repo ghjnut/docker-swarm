@@ -1,0 +1,21 @@
+## Dynamic configuration
+[[tls.certificates]]
+  #certFile = "/certs/ca.crt"
+  certFile = "/certs/traefik-private.crt"
+  keyFile  = "/certs/traefik-private.key"
+  stores = ["default"]
+
+[tls.stores]
+  [tls.stores.default]
+    [tls.stores.default.defaultCertificate]
+      #certFile = "/certs/ca.crt"
+      certFile = "/certs/traefik-private.crt"
+      keyFile  = "/certs/traefik-private.key"
+
+#[http.serversTransports.insecure]
+#  insecureSkipVerify = true
+#
+#[http.services]
+#  [http.services.grafana]
+#    [http.services.grafana.loadBalancer]
+#      serversTransport = "insecure"
