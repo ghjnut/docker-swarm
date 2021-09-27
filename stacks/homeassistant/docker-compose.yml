@@ -2,13 +2,13 @@ version: '3.7'
 
 services:
   server:
-    image: homeassistant/home-assistant:stable
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     volumes:
       - type: bind
         source: /var/lib/homeassistant
         target: /config
     environment:
-      TZ: America/Denver
+      TZ: ${TZ}
     devices:
       - "/dev/ttyACM0:/dev/ttyACM0"
     privileged: true
