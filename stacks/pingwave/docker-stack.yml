@@ -3,7 +3,7 @@ version: '3.7'
 services:
   agent:
     # TODO pin, point to registry
-    image: 127.0.0.1:5000/ghjnut/pingwave:latest
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -14,7 +14,7 @@ services:
         delay: 5s
         max_attempts: 1
     configs:
-      - source: config
+      - source: pingwave.hcl
         target: /pingwave.hcl
     networks:
       - graphite
@@ -26,6 +26,6 @@ networks:
     name: graphite_default
 
 configs:
-  config:
-    external: true
-    name: pingwave
+  pingwave.hcl:
+    name: pingwave-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.hcl
+    file: config/pingwave.hcl
