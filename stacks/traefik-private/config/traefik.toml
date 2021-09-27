@@ -13,8 +13,8 @@
     network = "traefik-private"
 
 [api]
-  insecure = true
-  dashboard = true
+  insecure = false
+  dashboard = false
 
 [entryPoints]
   [entryPoints.web]
