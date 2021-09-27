@@ -16,9 +16,12 @@ services:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
         - traefik.docker.network=traefik-private
-        - traefik.http.routers.pihole.entrypoints=web
-        - traefik.http.routers.pihole.rule=Host(`${DOMAIN:?DOMAIN not set}`)
-        - traefik.http.routers.pihole.service=pihole
+
+        # https
+        - traefik.http.routers.pihole-secure.entrypoints=websecure
+        - traefik.http.routers.pihole-secure.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.pihole-secure.tls=true
+
         - traefik.http.services.pihole.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     environment:
       TZ: ${TZ}
