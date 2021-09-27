@@ -2,11 +2,14 @@ version: '3.7'
 
 services:
   server:
-    image: kylemanna/openvpn:latest
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     #networks:
     #  - openvpn
     ports:
-      - "1194:1194/udp"
+      - target: 1194
+        published: 1194
+        protocol: udp
+        mode: host
     cap_add:
       - NET_ADMIN
     volumes:

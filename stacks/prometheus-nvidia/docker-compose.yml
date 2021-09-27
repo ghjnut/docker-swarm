@@ -1,8 +1,8 @@
-version: "3"
+version: "3.7"
 
 services:
   nvidia_exporter:
-    image: mindprince/nvidia_gpu_prometheus_exporter:0.1
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       restart_policy:
         condition: any
@@ -15,7 +15,7 @@ services:
       - "/dev/nvidia0:/dev/nvidia0"
     volumes:
       # TODO figure out a more robust way to mount the right lib
-      - "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.470.63.01:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1"
+      - "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.${VERSION}:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1"
 
 networks:
   exporter:
