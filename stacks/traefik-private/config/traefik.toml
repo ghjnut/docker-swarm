@@ -34,3 +34,10 @@
     #  [[entryPoints.websecure.http.tls.domains]]
     #    main = "internal.jaked.in"
     #    sans = ["*.internal.jaked.in"]
+
+  #[entryPoints.deluged-client]
+  #  address = ":58846/tcp"
+  #[entryPoints.deluged-tcp]
+  #  address = ":58946/tcp"
+  #[entryPoints.deluged-udp]
+  #  address = ":58946/udp"

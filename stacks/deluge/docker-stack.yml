@@ -2,9 +2,7 @@ version: '3.7'
 
 services:
   deluged:
-    # TODO pipe through traefik (for some reason wasn't working)
-    #image: registry.jaked.in.internal:5000/deluge:2.0.3
-    image: 127.0.0.1:5000/deluge:2.0.3
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -14,22 +12,46 @@ services:
         condition: any
         delay: 5s
         max_attempts: 1
-      labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.tcp.routers.deluged.entrypoints=deluged"
-        - "traefik.tcp.routers.deluged.rule=Host(`deluged.jaked.in.local`)"
-        - "traefik.tcp.routers.deluged.service=deluged"
-        # daemon
-        - "traefik.tcp.services.deluged.loadbalancer.server.port=58846"
+      #labels:
+      #  - traefik.enable=true
+      #  - traefik.constraint-label=traefik-private
+      #  - traefik.docker.network=traefik-private
+
+      #  # client
+      #  - traefik.http.routers.deluged-client.entrypoints=deluged-client
+      #  - traefik.http.routers.deluged-client.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+      #  - traefik.http.routers.deluged-client.service=deluged-client
+      #  - traefik.http.services.deluged-client.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
+
+      #  # TCP
+      #  - traefik.http.routers.deluged-tcp.entrypoints=deluged-tcp
+      #  - traefik.http.routers.deluged-tcp.service=deluged-tcp
+      #  - traefik.http.services.deluged-tcp.loadbalancer.server.port=${TORRENT_PORT:?TORRENT_PORT not set}
+
+      #  # UDP
+      #  - traefik.http.routers.deluged-udp.entrypoints=deluged-udp
+      #  - traefik.http.routers.deluged-udp.service=deluged-udp
+      #  - traefik.http.services.deluged-udp.loadbalancer.server.port=${TORRENT_PORT:?TORRENT_PORT not set}
+
     networks:
       - deluge
-      - traefik_default
+      - traefik-private
     # TODO pipe through traefik
     ports:
-      - "58846:58846"
-      # public torrents connections
-      - "58946:58946"
+      # client
+      - target: 58846
+        published: 58846
+        protocol: tcp
+        mode: host
+      # torrent
+      - target: 58946
+        published: 58946
+        protocol: tcp
+        mode: host
+      - target: 58946
+        published: 58946
+        protocol: udp
+        mode: host
     volumes:
       # TODO move to /var/lib
       - type: bind
@@ -44,9 +66,7 @@ services:
     command: deluged --do-not-daemonize --loglevel info
 
   web:
-    # TODO pipe through traefik (for some reason wasn't working)
-    #image: registry.jaked.in.internal:5000/deluge:2.0.3
-    image: 127.0.0.1:5000/deluge:2.0.3
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
@@ -57,15 +77,19 @@ services:
         delay: 5s
         max_attempts: 1
       labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=traefik_default"
-        - "traefik.http.routers.deluge.entrypoints=webinternal"
-        - "traefik.http.routers.deluge.rule=Host(`deluge.jaked.in.local`)"
-        - "traefik.http.routers.deluge.service=deluge"
-        - "traefik.http.services.deluge.loadbalancer.server.port=8112"
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+
+        # https
+        - traefik.http.routers.delugeweb-secure.entrypoints=websecure
+        - traefik.http.routers.delugeweb-secure.rule=Host(`${WEB_DOMAIN:?WEB_DOMAIN not set}`)
+        - traefik.http.routers.delugeweb-secure.tls=true
+
+        - traefik.http.services.delugeweb.loadbalancer.server.port=${WEB_LB_PORT:?WEB_LB_PORT not set}
     networks:
       - deluge
-      - traefik_default
+      - traefik-private
     volumes:
       #- type: bind
       #  source: /home/ghjnut/projects/docker/deluge/config/deluge
@@ -83,5 +107,6 @@ networks:
   deluge:
     driver: overlay
     attachable: true
-  traefik_default:
+  traefik-private:
+    name: traefik-private
     external: true
