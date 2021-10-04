@@ -1,39 +1,56 @@
-version: '3.7'
+---
+version: '3.8'
 
 services:
   server:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
+      mode: replicated
+      replicas: 1
       placement:
-        constraints: [node.hostname == hansel.jaked.in]
+        constraints:
+          - "node.hostname==hansel.jaked.in"
       restart_policy:
         condition: any
-        delay: 0s
+        delay: 5s
         max_attempts: 0
       labels:
         - traefik.enable=true
         - traefik.constraint-label=traefik-public
         - traefik.docker.network=traefik-public
+
         - traefik.http.routers.plex.entrypoints=plex
-        - traefik.http.routers.plex.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        # Source IP forwarding (doesn't work)
+        #- "traefik.http.middlewares.plex-ipwhitelist.ipwhitelist.sourcerange=0.0.0.0/0"
+        #- traefik.http.routers.plex.middlewares=plex-ipwhitelist@docker
+        - traefik.http.routers.plex.rule=Host(`${HOST_DOMAIN:?HOST_DOMAIN not set}`)
         - traefik.http.routers.plex.tls=true
         - traefik.http.routers.plex.tls.certresolver=${TLS_RESOLVER:?TLS_RESOLVER not set}
         - traefik.http.routers.plex.service=plex
         - traefik.http.services.plex.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     environment:
-      TZ: ${TZ}
-      PLEX_CLAIM: ${PLEX_CLAIM}
       ADVERTISE_IP: ${ADVERTISE_IP}
       ALLOWED_NETWORKS: ${ALLOWED_NETWORKS}
+      PLEX_CLAIM: ${PLEX_CLAIM}
+      TZ: ${TZ}
     networks:
       - traefik-public
+    healthcheck:
+      test: ["CMD-SHELL", "curl --connect-timeout 15 --silent --show-error --fail http://localhost:32400/identity >/dev/null"]
+      interval: 300s
+      timeout: 20s
+      retries: 3
+      start_period: 120s
     volumes:
+      # config
       - type: bind
         source: /var/lib/plex/config
         target: /config
+      # transcode
       - type: bind
         source: /var/lib/plex/transcode
         target: /transcode
+      # data
       - type: bind
         source: /home/ghjnut/src/github.com/ghjnut/docker-beets/data/clean
         target: /data/Music
