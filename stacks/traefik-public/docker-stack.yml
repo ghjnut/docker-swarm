@@ -5,7 +5,8 @@ services:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       placement:
-        constraints: [node.labels.traefik-public.traefik-public-certificates == true]
+        constraints:
+          - "node.labels.traefik-public.traefik-public-certificates==true"
     ports:
       # for TLS-ALPN-01 ACME challenge (letsencrypt https)
       - target: 443
