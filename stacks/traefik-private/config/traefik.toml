@@ -35,9 +35,20 @@
     #    main = "internal.jaked.in"
     #    sans = ["*.internal.jaked.in"]
 
+    # Source IP forwarding (doesn't work, use host networking)
+    #[entryPoints.websecure.proxyProtocol]
+    #  trustedIPs = ["0.0.0.0/0"]
+    #[entryPoints.websecure.forwardedHeaders]
+    #  trustedIPs = ["0.0.0.0/0"]
+
   #[entryPoints.deluged-client]
   #  address = ":58846/tcp"
   #[entryPoints.deluged-tcp]
   #  address = ":58946/tcp"
   #[entryPoints.deluged-udp]
   #  address = ":58946/udp"
+
+# Source IP forwarding (doesn't work, use host networking)
+#[http.middlewares]
+#  [http.middlewares.whitelist.ipWhiteList]
+#    sourceRange = ["0.0.0.0/0"]

@@ -20,7 +20,7 @@ services:
         - traefik.docker.network=traefik-public
 
         - traefik.http.routers.plex.entrypoints=plex
-        # Source IP forwarding (doesn't work)
+        # Source IP forwarding (doesn't work, use host networking)
         #- "traefik.http.middlewares.plex-ipwhitelist.ipwhitelist.sourcerange=0.0.0.0/0"
         #- traefik.http.routers.plex.middlewares=plex-ipwhitelist@docker
         - traefik.http.routers.plex.rule=Host(`${HOST_DOMAIN:?HOST_DOMAIN not set}`)

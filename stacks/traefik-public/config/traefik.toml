@@ -21,6 +21,16 @@
     # SSL+insecure
     address = ":32400/tcp"
     #debug = true
+    # Source IP forwarding (doesn't work)
+    #[entryPoints.plex.proxyProtocol]
+    #  trustedIPs = ["0.0.0.0/0"]
+    #[entryPoints.plex.forwardedHeaders]
+    #  trustedIPs = ["0.0.0.0/0"]
+
+# Source IP forwarding (doesn't work, use host networking)
+#[http.middlewares]
+#  [http.middlewares.plex.ipWhiteList]
+#    sourceRange = ["0.0.0.0/0"]
 
 #[http.middlewares]
 #  [http.middlewares.auth.basicauth]

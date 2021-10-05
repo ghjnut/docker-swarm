@@ -15,7 +15,7 @@ services:
       - target: 32400
         published: 32400
         protocol: tcp
-        mode: ingress
+        mode: host
     networks:
       - public
     volumes:
