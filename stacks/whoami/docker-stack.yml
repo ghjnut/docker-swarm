@@ -1,0 +1,38 @@
+---
+version: '3.8'
+
+services:
+  server:
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    deploy:
+      mode: replicated
+      replicas: 1
+      #placement:
+      #  constraints:
+      #    - "node.hostname==hansel.jaked.in"
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 0
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+
+        - traefik.http.routers.whoami-secure.entrypoints=websecure
+        # Source IP forwarding (doesn't work, use host networking)
+        #- "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=0.0.0.0/0"
+        #- traefik.http.routers.whoami-secure.middlewares=ipwhitelist@docker
+        - traefik.http.routers.whoami-secure.rule=Host(`${HOST_DOMAIN:?HOST_DOMAIN not set}`)
+        - traefik.http.routers.whoami-secure.tls=true
+
+        - traefik.http.services.plex.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
+    environment:
+      TZ: ${TZ}
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik-private
+    external: true
