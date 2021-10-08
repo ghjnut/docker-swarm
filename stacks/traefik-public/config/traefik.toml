@@ -1,14 +1,21 @@
+[log]
+  level = "INFO"
+  #level = "DEBUG"
+
+# for healthcheck
+[ping]
+
+# TODO figure out how to enable the GUI
+[api]
+  dashboard = false
+  insecure = false
+
 [providers]
   [providers.docker]
     constraints = "Label(`traefik.constraint-label`, `traefik-public`)"
     exposedByDefault = false
     swarmMode = true
     network = "traefik-public"
-
-# TODO figure out how to enable the GUI
-[api]
-  dashboard = false
-  insecure = false
 
 [certificatesResolvers.jakedin-public.acme]
   email = "ghjnut@gmail.com"

@@ -17,9 +17,13 @@ services:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
         - traefik.docker.network=traefik-private
-        - traefik.http.routers.unifi.entrypoints=web
-        - traefik.http.routers.unifi.service=unifi
-        - traefik.http.routers.unifi.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+
+        # https
+        - traefik.http.routers.unifi-secure.entrypoints=websecure
+        #- traefik.http.routers.unifi.service=unifi
+        - traefik.http.routers.unifi-secure.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.unifi-secure.tls=true
+
         - traefik.http.services.unifi.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     networks:
       - unifi

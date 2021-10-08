@@ -5,13 +5,14 @@ services:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       placement:
-        constraints: [node.hostname == hansel.jaked.in]
+        constraints:
+          - "node.hostname==hansel.jaked.in"
       #labels:
       #  - traefik.enable=true
       #  - traefik.constraint-label=traefik-private
       #  - traefik.docker.network=traefik-private
       #  - traefik.http.routers.traefik-private.entrypoints=websecure
-      #  - traefik.http.routers.traefik-private.rule=Host(`${DOMAIN:?DOMAIN not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      #  - traefik.http.routers.traefik-private.rule=Host(`${HOST_DOMAIN:?HOST_DOMAIN not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       #  - traefik.http.routers.traefik-private.service=api@internal
       #  # Dummy service for Swarm port detection. The port can be any valid integer value.
       #  - traefik.http.services.dummy-svc.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}

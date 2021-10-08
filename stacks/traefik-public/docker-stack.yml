@@ -16,6 +16,7 @@ services:
       - target: 32400
         published: 32400
         protocol: tcp
+        # 'host' to allow better forwarding of source IPs to plex
         mode: host
     networks:
       - public

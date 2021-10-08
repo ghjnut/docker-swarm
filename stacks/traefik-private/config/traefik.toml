@@ -5,6 +5,7 @@
 # for healthcheck
 [ping]
 
+# TODO figure out how to enable the GUI
 [api]
   insecure = false
   dashboard = false
