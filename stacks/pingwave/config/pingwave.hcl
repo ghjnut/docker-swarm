@@ -108,21 +108,24 @@ target_group "hops" {
   prefix = "hops"
 
   target "switch" {
-    address = "192.168.1.6"
+    address = "10.48.4.13"
   }
   target "gateway" {
-    address = "192.168.1.1"
+    address = "10.48.0.1"
   }
-  target "ap" {
-    address = "192.168.1.7"
+  target "ap-pro" {
+    address = "10.48.4.12"
+  }
+  target "ap-lite" {
+    address = "10.48.4.11"
   }
   target "derek" {
-    address = "192.168.1.10"
+    address = "10.48.0.6"
   }
   target "hop_1" {
-    address = "hlrn-dsl-gw06.hlrn.qwest.net"
+    address = "hlrn-dsl-gw12.hlrn.qwest.net"
   }
   target "hop_2" {
-    address = "63-225-124-41.hlrn.qwest.net"
+    address = "63-225-124-89.hlrn.qwest.net"
   }
 }
