@@ -30,7 +30,6 @@ services:
       - exporter
       - server
       - traefik-private
-    restart: always
     volumes:
       - data:/prometheus
     command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--storage.tsdb.retention.time=365d", "--web.console.libraries=/usr/share/prometheus/console_libraries", "--web.console.templates=/usr/share/prometheus/consoles"]
@@ -80,7 +79,6 @@ services:
         condition: any
         delay: 0s
         max_attempts: 0
-    pid: "host"
     networks:
       - exporter
     volumes:
