@@ -47,6 +47,27 @@ target_group "websites" {
   }
 }
 
+# netflix, YTtv, Youtube, Twitch, amazon prime,
+target_group "streaming" {
+  prefix = "streaming"
+  #curl https://api.fast.com/netflix/speedtest/v2?https=true
+  target "netflix-chey" {
+    address = "ipv4-c001-den001-centurylink-isp.1.oca.nflxvideo.net"
+  }
+  target "netflix-chey2" {
+    address = "ipv4-c002-cys002-centurylink-isp.1.oca.nflxvideo.net"
+  }
+  target "netflix-highlands" {
+    address = "ipv4-c002-den002-centurylink-isp.1.oca.nflxvideo.net"
+  }
+  target "netflix-highlands2" {
+    address = "ipv4-c003-den001-centurylink-isp.1.oca.nflxvideo.net"
+  }
+  target "netflix-springs" {
+    address = "ipv4-c003-cos001-centurylink-isp.1.oca.nflxvideo.net"
+  }
+}
+
 # You can specify multiple target groups
 target_group "games" {
   prefix = "games"
