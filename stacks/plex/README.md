@@ -11,6 +11,11 @@ figure out local/public playback. this seems to be based on [Network](https://pl
 
     "/usr/lib/plexmediaserver"
     "/config/Library/Application Support/Plex Media Server"
+    "/config/Library/Application\ Support/Plex\ Media\ Server/Logs"
+
+### Commands
+
+    ls /var/lib/plex/config/Library/Application\ Support/Plex\ Media\ Server/Logs/ |grep -v '[1|2|3|4|5]'
 
 ### Redeploy
 - stop container
