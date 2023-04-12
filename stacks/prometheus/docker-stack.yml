@@ -70,7 +70,7 @@ services:
     # node_uname_info{domainname="(none)",machine="x86_64",
     # nodename="derek.jaked.in",release="5.0.0-36-generic",sysname="Linux",
     # version="#39-Ubuntu SMP Tue Nov 12 09:46:06 UTC 2019"} 1
-
+    # doesn't work
     hostname: "{{.Node.Hostname}}"
     deploy:
       endpoint_mode: dnsrr
@@ -82,8 +82,9 @@ services:
     networks:
       - exporter
     volumes:
-      - "/:/host:ro,rslave"
-    command: --path.rootfs=/host
+      - '/:/host:ro,rslave'
+    command:
+      - '--path.rootfs=/host'
 
 networks:
   exporter:
