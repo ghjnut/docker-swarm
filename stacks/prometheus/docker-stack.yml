@@ -11,8 +11,8 @@ services:
         constraints: [node.hostname == hansel.jaked.in]
       restart_policy:
         condition: any
-        delay: 0s
-        max_attempts: 0
+        delay: 30s
+        max_attempts: 3
       labels:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
