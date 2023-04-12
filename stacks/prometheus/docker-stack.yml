@@ -3,6 +3,7 @@ version: '3.7'
 services:
   server:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    user: root
     deploy:
       mode: replicated
       replicas: 1
@@ -31,7 +32,14 @@ services:
       - server
       - traefik-private
     volumes:
-      - data:/prometheus
+      - type: volume
+        source: data
+        target: /prometheus
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+
     command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--storage.tsdb.retention.time=365d", "--web.console.libraries=/usr/share/prometheus/console_libraries", "--web.console.templates=/usr/share/prometheus/consoles"]
 
   cadvisor_exporter:
