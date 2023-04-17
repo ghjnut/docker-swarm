@@ -13,21 +13,21 @@ target_group "cloud" {
   target "ec2.us-west-2" {
     address = "ec2.us-west-2.amazonaws.com"
   }
-  target "gce.us-central1" {
-    address = "us-central1-gce.cloudharmony.net"
-  }
-  target "gce.us-east1" {
-    address = "us-east1-gce.cloudharmony.net"
-  }
-  target "gce.us-east4" {
-    address = "us-east4-gce.cloudharmony.net"
-  }
-  target "gce.us-west1" {
-    address = "us-west1-gce.cloudharmony.net"
-  }
-  target "gce.us-west2-a" {
-    address = "us-west2-a-gce.cloudharmony.net"
-  }
+  #target "gce.us-central1" {
+  #  address = "us-central1-gce.cloudharmony.net"
+  #}
+  #target "gce.us-east1" {
+  #  address = "us-east1-gce.cloudharmony.net"
+  #}
+  #target "gce.us-east4" {
+  #  address = "us-east4-gce.cloudharmony.net"
+  #}
+  #target "gce.us-west1" {
+  #  address = "us-west1-gce.cloudharmony.net"
+  #}
+  #target "gce.us-west2-a" {
+  #  address = "us-west2-a-gce.cloudharmony.net"
+  #}
 }
 
 # Declare a target group with a name

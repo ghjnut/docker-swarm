@@ -11,8 +11,8 @@ services:
         constraints: [node.hostname == hansel.jaked.in]
       restart_policy:
         condition: any
-        delay: 5s
-        max_attempts: 1
+        delay: 30s
+        max_attempts: 5
     configs:
       - source: pingwave.hcl
         target: /pingwave.hcl
