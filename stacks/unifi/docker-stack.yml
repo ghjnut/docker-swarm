@@ -57,7 +57,7 @@ services:
         mode: host
 
   mongo:
-    image: mongo:3.6
+    image: ${MONGO_DOCKER_IMAGE}:${MONGO_DOCKER_TAG}
     deploy:
       mode: replicated
       replicas: 1
