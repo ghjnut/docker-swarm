@@ -55,7 +55,7 @@ services:
       - dnsmasq:/etc/dnsmasq.d/
 
   prometheus_exporter:
-    image: ekofr/pihole-exporter:v0.0.11
+    image: ${EXPORTER_DOCKER_IMAGE}:${EXPORTER_DOCKER_TAG}
     deploy:
       endpoint_mode: dnsrr
       mode: replicated
