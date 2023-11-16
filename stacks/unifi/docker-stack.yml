@@ -63,10 +63,6 @@ services:
         published: 3478
         protocol: udp
         mode: host
-      - target: 10001
-        published: 10001
-        protocol: udp
-        mode: host
 
   mongo:
     image: ${MONGO_DOCKER_IMAGE}:${MONGO_DOCKER_TAG}
