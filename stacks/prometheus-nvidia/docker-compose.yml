@@ -1,5 +1,7 @@
 version: "3.7"
 
+# TODO migrate to swarm when support for `devices` is added
+
 services:
   nvidia_exporter:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
@@ -15,7 +17,7 @@ services:
       - "/dev/nvidia0:/dev/nvidia0"
     volumes:
       # TODO figure out a more robust way to mount the right lib
-      - "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.${VERSION}:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1"
+      - "${PATH_ML_LIB}:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1"
 
 networks:
   exporter:

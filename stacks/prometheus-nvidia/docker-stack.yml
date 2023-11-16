@@ -20,7 +20,7 @@ services:
       - "/dev/nvidiactl:/dev/nvidiactl"
       - "/dev/nvidia0:/dev/nvidia0"
     volumes:
-      - "/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.${VERSION}:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1"
+      - "${PATH_ML_LIB}:/usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1"
 
 networks:
   exporter:
