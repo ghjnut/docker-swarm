@@ -12,7 +12,7 @@ services:
       - target: 443
         published: 4443
         protocol: tcp
-        mode: ingress
+        mode: host
       - target: 32400
         published: 32400
         protocol: tcp
