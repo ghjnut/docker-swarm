@@ -37,16 +37,28 @@ services:
       DB_URI: mongodb://mongo/unifi
       STATDB_URI: mongodb://mongo/unifi_stat
       DB_NAME: unifi
+
+    # The Unifi-in-Docker container exposes the following ports. A minimal Unifi Controller installation requires you expose the first three with the -p ... option.
+    #8080/tcp - Device command/control
+    #8443/tcp - Web interface + API
+    #3478/udp - STUN service
+    #8843/tcp - HTTPS portal (optional)
+    #8880/tcp - HTTP portal (optional)
+    #6789/tcp - Speed Test (unifi5 only) (optional)
+
     # TODO figure out what can be safely loadbalanced
     ports:
+      # Device command/control
       - target: 8080
         published: 8080
         protocol: tcp
         mode: host
+      # Web interface + API
       - target: 8443
         published: 8443
         protocol: tcp
         mode: host
+      # STUN service
       - target: 3478
         published: 3478
         protocol: udp
