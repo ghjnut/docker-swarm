@@ -2,6 +2,8 @@
 
 ## TODO
 figure out local/public playback. this seems to be based on [Network](https://plex.jaked.in:32400/web/index.html#!/settings/server/fdc7ad4417ee3268bb58b3876db616a563fac900/settings/network)->Preferred Network Interface. best solution is likely to add a second interface for internal only traefik. clients can be seen [here](https://plex.jaked.in:32400/web/index.html#!/settings/server/fdc7ad4417ee3268bb58b3876db616a563fac900/status/server-dashboard)
+## Links
+[Docker Image](https://hub.docker.com/r/plexinc/pms-docker)
 
 ### Notes
 

@@ -7,7 +7,8 @@ services:
       mode: replicated
       replicas: 1
       placement:
-        constraints: [node.hostname == derek]
+        constraints:
+          - node.hostname==derek.jaked.in
       restart_policy:
         condition: any
         delay: 0s

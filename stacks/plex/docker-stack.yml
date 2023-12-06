@@ -1,6 +1,4 @@
----
 version: '3.8'
-
 services:
   server:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
@@ -36,7 +34,11 @@ services:
     networks:
       - traefik-public
     healthcheck:
-      test: ["CMD-SHELL", "curl --connect-timeout 15 --silent --show-error --fail http://localhost:32400/identity >/dev/null"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --connect-timeout 15 --silent --show-error --fail http://localhost:32400/identity >/dev/null"
+        ]
       interval: 300s
       timeout: 20s
       retries: 3
