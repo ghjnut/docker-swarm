@@ -1,21 +1,39 @@
+# vi: ft=yaml.docker-compose
 version: "3.7"
 
 services:
+  # https://community.traefik.io/t/traefik-2-0-swarm-not-working-with-services-on-ports/1877/9
   traefik:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     deploy:
       placement:
         constraints:
-          - "node.hostname==hansel.jaked.in"
-      #labels:
-      #  - traefik.enable=true
-      #  - traefik.constraint-label=traefik-private
-      #  - traefik.docker.network=traefik-private
-      #  - traefik.http.routers.traefik-private.entrypoints=websecure
-      #  - traefik.http.routers.traefik-private.rule=Host(`${HOST_DOMAIN:?HOST_DOMAIN not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
-      #  - traefik.http.routers.traefik-private.service=api@internal
-      #  # Dummy service for Swarm port detection. The port can be any valid integer value.
-      #  - traefik.http.services.dummy-svc.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
+          # https://doc.traefik.io/traefik/providers/docker/#docker-api-access_1
+          - node.role == manager
+          - node.hostname == hansel.jaked.in
+          # TODO:
+          #- "node.labels."
+      labels:
+        - traefik.enable=true
+
+        - traefik.constraint-label=traefik-private
+        - traefik.docker.network=traefik-private
+
+        - traefik.http.routers.traefik-private-secure.entrypoints=websecure
+        - traefik.http.routers.traefik-private-secure.rule=Host(`${DOMAIN:?DOMAIN not set}`) && PathPrefix(`/dashboard`, `/api`)
+        - traefik.http.routers.traefik-private-secure.tls=true
+        - traefik.http.routers.traefik-private-secure.service=api@internal
+
+        # PASSWORD AUTH
+        #- traefik.http.routers.traefik-private-secure.middlewares=traefik-auth
+        # htpasswd -nb admin password
+        # test
+        #- "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$lh5FZhmU$$1EV9UsnCGR0BCx6xVhP1Y0"
+        # RY3du6J-HUzETRvp9_WRAn
+        #- "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$BDFWfraJ$$BUd65G6jhew3fxM4Wx1.p/"
+
+        # Dummy service for Swarm port detection. The port can be any valid integer value.
+        - traefik.http.services.noop.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
     ports:
       - target: 80
         published: 80
@@ -28,15 +46,12 @@ services:
     networks:
       - private
     healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      test: [ "CMD", "traefik", "healthcheck", "--ping" ]
       interval: 15s
       timeout: 5s
       retries: 5
       start_period: 30s
     volumes:
-      #- type: volume
-      #  source: traefik-dynamic
-      #  target: /etc/traefik/dynamic_conf
       - type: volume
         source: private-cert
         target: /certs
@@ -51,8 +66,8 @@ services:
         target: /etc/traefik/dynamic_conf/traefik.toml
 
 volumes:
-  #traefik-dynamic:
   private-cert:
+
 
 configs:
   traefik.toml:

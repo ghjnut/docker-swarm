@@ -7,8 +7,8 @@
 
 # TODO figure out how to enable the GUI
 [api]
+  dashboard = true
   insecure = false
-  dashboard = false
 
 [providers]
   [providers.file]
@@ -30,7 +30,7 @@
           to = "websecure"
           scheme = "https"
 
-  # SSL+insecure
+  # SSL
   [entryPoints.websecure]
     address = ":443/tcp"
     #debug = true
