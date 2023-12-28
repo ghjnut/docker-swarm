@@ -1,12 +1,12 @@
+# vi: ft=yaml.docker-compose
 version: '3.8'
 
 services:
   server:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
-    # TODO: volume or config?
     volumes:
-      - type: bind
-        source: /var/lib/homeassistant
+      - type: volume
+        source: config
         target: /config
     networks:
       - traefik-private
@@ -33,6 +33,10 @@ services:
         - traefik.http.routers.homeassistant-secure.tls=true
 
         - traefik.http.services.homeassistant.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
+
+volumes:
+  config:
+
 
 networks:
   traefik-private:
