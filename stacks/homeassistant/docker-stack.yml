@@ -3,6 +3,7 @@ version: '3.8'
 services:
   server:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    # TODO: volume or config?
     volumes:
       - type: bind
         source: /var/lib/homeassistant
@@ -27,9 +28,9 @@ services:
         - traefik.constraint-label=traefik-private
         - traefik.docker.network=traefik-private
 
-        - traefik.http.routers.homeassistant.entrypoints=websecure
-        - traefik.http.routers.homeassistant.rule=Host(`${DOMAIN:?DOMAIN not set}`)
-        - traefik.http.routers.homeassistant.tls=true
+        - traefik.http.routers.homeassistant-secure.entrypoints=websecure
+        - traefik.http.routers.homeassistant-secure.rule=Host(`${DOMAIN:?DOMAIN not set}`)
+        - traefik.http.routers.homeassistant-secure.tls=true
 
         - traefik.http.services.homeassistant.loadbalancer.server.port=${LB_PORT:?LB_PORT not set}
 
