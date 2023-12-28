@@ -1,4 +1,3 @@
-
 # Loads default set of integrations. Do not remove.
 default_config:
 
@@ -9,3 +8,12 @@ frontend:
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+
+http:
+  use_x_forwarded_for: true
+  # TODO: this should be more explicit, DNS lookup?
+  trusted_proxies:
+    - 10.0.1.80/32 # apparently this is where traffic is coming from?
+    #- 10.48.0.100/32 # Server IP
+    #- 10.0.1.25/32 # lb-traefik-private
+    #- 127.0.0.1
