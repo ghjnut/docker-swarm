@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 services:
   server:
@@ -11,11 +11,17 @@ services:
       - traefik-private
     environment:
       TZ: ${TZ}
+    # TODO:https://github.com/allfro/device-mapping-manager/blob/master/docker-compose.yml
+    #devices:
+    #  - "/dev/ttyACM0:/dev/ttyACM0"
     deploy:
       mode: replicated
       replicas: 1
+      #placement:
+      #  constraints: [ node.hostname == hansel.jaked.in ]
       placement:
-        constraints: [node.hostname == hansel.jaked.in]
+        constraints:
+          - node.labels.devices.ttyACM0==true
       labels:
         - traefik.enable=true
         - traefik.constraint-label=traefik-private
