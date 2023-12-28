@@ -15,6 +15,9 @@ services:
     # TODO:https://github.com/allfro/device-mapping-manager/blob/master/docker-compose.yml
     #devices:
     #  - "/dev/ttyACM0:/dev/ttyACM0"
+    configs:
+      - source: configuration.yaml
+        target: /config/configuration.yaml
     deploy:
       mode: replicated
       replicas: 1
@@ -37,6 +40,11 @@ services:
 volumes:
   config:
 
+
+configs:
+  configuration.yaml:
+    name: homeassistant-${SETTINGS_TIMESTAMP:?SETTINGS_TIMESTAMP not set}.toml
+    file: config/configuration.yaml
 
 networks:
   traefik-private:
