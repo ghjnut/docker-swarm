@@ -4,7 +4,10 @@
 set -eu -o pipefail
 
 VOLUME_PKI=easy-rsa_pki
+FILE_NAME_BASE=traefik-private
 
 docker run --rm -it \
 	--volume ${VOLUME_PKI}:/etc/easy-rsa/pki \
-	ghjnut/easy-rsa init-pki soft
+	--volume $(pwd)/config/vars:/etc/easy-rsa/vars \
+	ghjnut/easy-rsa \
+		sign-req server ${FILE_NAME_BASE}

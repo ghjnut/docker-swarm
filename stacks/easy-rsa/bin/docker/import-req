@@ -1,0 +1,16 @@
+# vi: ft=bash
+#!/usr/bin/env bash
+[[ "$TRACE" ]] && set -x
+set -eu -o pipefail
+
+VOLUME_PKI=easy-rsa_pki
+FILE_NAME_BASE=traefik-private
+
+# from root
+
+docker run --rm -it \
+	--volume $(pwd)/stacks/traefik-private/config/certs/traefik-private.csr:/tmp/traefik-private.csr \
+	--volume $(pwd)/stacks/easy-rsa/config/vars:/etc/easy-rsa/vars \
+	--volume ${VOLUME_PKI}:/etc/easy-rsa/pki \
+	ghjnut/easy-rsa \
+		import-req /tmp/traefik-private.csr ${FILE_NAME_BASE}

@@ -4,15 +4,8 @@
 set -eu -o pipefail
 
 VOLUME_PKI=easy-rsa_pki
-NAME=easyrsa
-
-#VOLUME_PKI=traefik-private_pki
-#NAME=easyrsa-traefik
 
 docker run --rm -it \
-	--env TZ=America/Denver \
-	--name ${NAME} \
-	--entrypoint sh \
 	--volume $(pwd)/config/vars:/etc/easy-rsa/vars \
 	--volume ${VOLUME_PKI}:/etc/easy-rsa/pki \
-	ghjnut/easy-rsa
+	ghjnut/easy-rsa build-ca nopass
