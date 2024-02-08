@@ -10,10 +10,9 @@ services:
       placement:
         constraints:
           # https://doc.traefik.io/traefik/providers/docker/#docker-api-access_1
+          # TODO:"node.labels."
           - node.role == manager
           - node.hostname == hansel.jaked.in
-          # TODO:
-          #- "node.labels."
       labels:
         - traefik.enable=true
 
