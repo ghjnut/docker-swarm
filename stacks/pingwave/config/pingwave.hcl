@@ -54,9 +54,9 @@ target_group "streaming" {
   #target "netflix-chey" {
   #  address = "ipv4-c001-den001-centurylink-isp.1.oca.nflxvideo.net"
   #}
-  target "netflix-chey2" {
-    address = "ipv4-c002-cys002-centurylink-isp.1.oca.nflxvideo.net"
-  }
+  #target "netflix-chey2" {
+  #  address = "ipv4-c002-cys002-centurylink-isp.1.oca.nflxvideo.net"
+  #}
   #target "netflix-highlands" {
   #  address = "ipv4-c002-den002-centurylink-isp.1.oca.nflxvideo.net"
   #}
