@@ -3,8 +3,9 @@
 [[ "$TRACE" ]] && set -x
 set -eu -o pipefail
 
-VOLUME_PKI=easy-rsa_pki
+VOLUME_PKI=traefik-private_pki
+SERVERNAME=traefik-private
 
 docker run --rm -it \
 	--volume ${VOLUME_PKI}:/etc/easy-rsa/pki \
-	ghjnut/easy-rsa init-pki soft
+	ghjnut/easy-rsa gen-req ${SERVERNAME} nopass
