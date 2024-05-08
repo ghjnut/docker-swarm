@@ -1,0 +1,48 @@
+---
+version: '3.8'
+
+services:
+  palworld:
+    image: thijsvanloef/palworld-server-docker:latest
+    deploy:
+      mode: replicated
+      replicas: 0
+      placement:
+        constraints: [node.hostname == hansel.jaked.in]
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 0
+      labels:
+        - traefik.enable=false
+    ports:
+      - target: 8211
+        published: 8211
+        protocol: udp
+        mode: ingress
+    networks:
+      - traefik-private
+    environment:
+       - PUID=1000
+       - PGID=1000
+       - PORT=8211 # Optional but recommended
+       - PLAYERS=8 # Optional but recommended
+       - SERVER_PASSWORD="test" # Optional but recommended
+       - MULTITHREADING=true
+       - RCON_ENABLED=true
+       - RCON_PORT=25575
+       - TZ=UTC
+       - ADMIN_PASSWORD="test"
+       - COMMUNITY=false  # Enable this if you want your server to show up in the community servers tab, USE WITH SERVER_PASSWORD!
+       - SERVER_NAME="I'm not your pal, guy"
+    volumes:
+       - palworld:/palworld
+    networks:
+      - palworld
+
+networks:
+  palworld:
+    driver: overlay
+
+volumes:
+  palworld:
